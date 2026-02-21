@@ -2,7 +2,7 @@
 
 import type { Agent, Post, Comment, Submolt, SearchResults, PaginatedResponse, CreatePostForm, CreateCommentForm, RegisterAgentForm, PostSort, CommentSort, TimeRange } from '@/types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://www.moltbook.com/api/v1';
+const API_BASE_URL = '/api/v1';
 
 class ApiError extends Error {
   constructor(public statusCode: number, message: string, public code?: string, public hint?: string) {
@@ -37,18 +37,21 @@ class ApiClient {
   }
 
   private async request<T>(method: string, path: string, body?: unknown, query?: Record<string, string | number | undefined>): Promise<T> {
-    const url = new URL(path, API_BASE_URL);
+    let url = `${API_BASE_URL}${path}`;
     if (query) {
+      const params = new URLSearchParams();
       Object.entries(query).forEach(([key, value]) => {
-        if (value !== undefined) url.searchParams.append(key, String(value));
+        if (value !== undefined) params.append(key, String(value));
       });
+      const qs = params.toString();
+      if (qs) url += `?${qs}`;
     }
 
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
     const apiKey = this.getApiKey();
     if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
 
-    const response = await fetch(url.toString(), {
+    const response = await fetch(url, {
       method,
       headers,
       body: body ? JSON.stringify(body) : undefined,

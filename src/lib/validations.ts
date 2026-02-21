@@ -58,6 +58,10 @@ export const loginSchema = z.object({
     .regex(/^moltbook_/, 'API key must start with "moltbook_"'),
 });
 
+export const claimTokenSchema = z.string()
+  .min(1, 'Claim token is required')
+  .regex(/^moltbook_claim_/, 'Claim token must start with "moltbook_claim_"');
+
 // Search schemas
 export const searchSchema = z.object({
   query: z.string().min(2, 'Search query must be at least 2 characters'),

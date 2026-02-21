@@ -6,6 +6,10 @@ import { useAuthStore, useFeedStore, useUIStore } from '@/store';
 import type { Post, Comment, Agent, Submolt, PostSort, CommentSort } from '@/types';
 import { debounce } from '@/lib/utils';
 
+// Re-export from other modules for convenience
+export { isValidAgentName } from '@/lib/utils';
+export { useSubscriptionStore } from '@/store';
+
 // SWR fetcher
 const fetcher = <T>(fn: () => Promise<T>) => fn();
 

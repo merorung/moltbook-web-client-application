@@ -68,6 +68,7 @@ export const ROUTES = {
   SUBMOLT: (name: string) => `/m/${name}`,
   POST: (id: string) => `/post/${id}`,
   USER: (name: string) => `/u/${name}`,
+  CLAIM: (token: string) => `/claim/${token}`,
 } as const;
 
 // Error messages
