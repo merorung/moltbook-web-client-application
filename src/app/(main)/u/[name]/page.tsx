@@ -18,13 +18,13 @@ export default function UserProfilePage() {
   const { agent: currentAgent, isAuthenticated } = useAuth();
   const [following, setFollowing] = useState(false);
   const [activeTab, setActiveTab] = useState('posts');
-  
+
   if (error) return notFound();
-  
+
   const agent = data?.agent;
   const isOwnProfile = currentAgent?.name === params.name;
   const isFollowing = data?.isFollowing || following;
-  
+
   const handleFollow = async () => {
     if (!isAuthenticated || following) return;
     setFollowing(true);
@@ -41,17 +41,17 @@ export default function UserProfilePage() {
       setFollowing(false);
     }
   };
-  
+
   return (
     <PageContainer>
       <div className="max-w-5xl mx-auto">
-        {/* Banner */}
+        {/* 배너 */}
         <div className="h-32 bg-gradient-to-r from-moltbook-600 to-primary rounded-lg mb-4" />
-        
+
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* Main content */}
+          {/* 메인 콘텐츠 */}
           <div className="flex-1">
-            {/* Profile header */}
+            {/* 프로필 헤더 */}
             <Card className="p-4 mb-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-4">
@@ -65,7 +65,7 @@ export default function UserProfilePage() {
                       </>
                     )}
                   </Avatar>
-                  
+
                   <div>
                     {isLoading ? (
                       <>
@@ -77,7 +77,7 @@ export default function UserProfilePage() {
                         <h1 className="text-2xl font-bold flex items-center gap-2">
                           {agent?.displayName || agent?.name}
                           {agent?.status === 'active' && (
-                            <Badge variant="secondary" className="text-xs">Verified</Badge>
+                            <Badge variant="secondary" className="text-xs">인증됨</Badge>
                           )}
                         </h1>
                         <p className="text-muted-foreground">u/{agent?.name}</p>
@@ -85,115 +85,115 @@ export default function UserProfilePage() {
                     )}
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-2">
                   {isOwnProfile ? (
                     <Link href="/settings">
                       <Button variant="outline" size="sm">
                         <Settings className="h-4 w-4 mr-1" />
-                        Edit Profile
+                        프로필 수정
                       </Button>
                     </Link>
                   ) : isAuthenticated && (
                     <Button onClick={handleFollow} variant={isFollowing ? 'secondary' : 'default'} size="sm" disabled={following}>
-                      {isFollowing ? 'Following' : 'Follow'}
+                      {isFollowing ? '팔로잉' : '팔로우'}
                     </Button>
                   )}
                 </div>
               </div>
-              
-              {/* Bio */}
+
+              {/* 소개 */}
               {agent?.description && (
                 <p className="mt-4 text-sm">{agent.description}</p>
               )}
-              
-              {/* Stats */}
+
+              {/* 통계 */}
               <div className="flex items-center gap-6 mt-4 text-sm">
                 <div className="flex items-center gap-1">
                   <Award className="h-4 w-4 text-muted-foreground" />
                   <span className={cn('font-medium', (agent?.karma || 0) > 0 && 'text-upvote')}>
                     {formatScore(agent?.karma || 0)}
                   </span>
-                  <span className="text-muted-foreground">karma</span>
+                  <span className="text-muted-foreground">카르마</span>
                 </div>
-                
+
                 <div className="flex items-center gap-1">
                   <Users className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium">{formatScore(agent?.followerCount || 0)}</span>
-                  <span className="text-muted-foreground">followers</span>
+                  <span className="text-muted-foreground">팔로워</span>
                 </div>
-                
+
                 <div className="flex items-center gap-1">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">Joined {agent?.createdAt ? formatDate(agent.createdAt) : 'recently'}</span>
+                  <span className="text-muted-foreground">가입일 {agent?.createdAt ? formatDate(agent.createdAt) : '최근'}</span>
                 </div>
               </div>
             </Card>
-            
-            {/* Tabs */}
+
+            {/* 탭 */}
             <TabsPrimitive.Root value={activeTab} onValueChange={setActiveTab}>
               <Card className="mb-4">
                 <TabsPrimitive.List className="flex border-b">
                   <TabsPrimitive.Trigger value="posts" className={cn('flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors', activeTab === 'posts' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground')}>
                     <FileText className="h-4 w-4" />
-                    Posts
+                    게시글
                   </TabsPrimitive.Trigger>
                   <TabsPrimitive.Trigger value="comments" className={cn('flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors', activeTab === 'comments' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground')}>
                     <MessageSquare className="h-4 w-4" />
-                    Comments
+                    댓글
                   </TabsPrimitive.Trigger>
                 </TabsPrimitive.List>
               </Card>
-              
+
               <TabsPrimitive.Content value="posts">
                 {data?.recentPosts && data.recentPosts.length > 0 ? (
                   <PostList posts={data.recentPosts} />
                 ) : (
                   <Card className="p-8 text-center">
                     <FileText className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-                    <p className="text-muted-foreground">No posts yet</p>
+                    <p className="text-muted-foreground">아직 게시글이 없습니다</p>
                   </Card>
                 )}
               </TabsPrimitive.Content>
-              
+
               <TabsPrimitive.Content value="comments">
                 <Card className="p-8 text-center">
                   <MessageSquare className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-                  <p className="text-muted-foreground">Comments coming soon</p>
+                  <p className="text-muted-foreground">댓글 기능이 곧 추가됩니다</p>
                 </Card>
               </TabsPrimitive.Content>
             </TabsPrimitive.Root>
           </div>
-          
-          {/* Sidebar */}
+
+          {/* 사이드바 */}
           <div className="w-full lg:w-80 space-y-4">
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-base">Trophy Case</CardTitle>
+                <CardTitle className="text-base">트로피 케이스</CardTitle>
               </CardHeader>
               <CardContent>
                 {(agent?.karma || 0) >= 100 ? (
                   <div className="flex flex-wrap gap-2">
-                    <Badge variant="secondary">🏆 Contributor</Badge>
-                    {(agent?.karma || 0) >= 1000 && <Badge variant="secondary">⭐ Top Agent</Badge>}
-                    {(agent?.karma || 0) >= 10000 && <Badge variant="secondary">💎 Elite</Badge>}
+                    <Badge variant="secondary">🏆 기여자</Badge>
+                    {(agent?.karma || 0) >= 1000 && <Badge variant="secondary">⭐ 톱 에이전트</Badge>}
+                    {(agent?.karma || 0) >= 10000 && <Badge variant="secondary">💎 엘리트</Badge>}
                   </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground">No trophies yet. Keep contributing!</p>
+                  <p className="text-sm text-muted-foreground">아직 트로피가 없습니다. 계속 기여해주세요!</p>
                 )}
               </CardContent>
             </Card>
-            
+
             {agent?.status === 'active' && (
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-green-500" />
-                    Claimed Agent
+                    인증된 에이전트
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground">This agent has been verified and claimed by a human operator.</p>
+                  <p className="text-sm text-muted-foreground">이 에이전트는 인간 운영자에 의해 인증되었습니다.</p>
                 </CardContent>
               </Card>
             )}

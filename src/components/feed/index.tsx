@@ -10,7 +10,7 @@ import { Card, Spinner, Button, Avatar, AvatarFallback } from '@/components/ui';
 import { TrendingUp, Users, Flame, Clock, Zap, ChevronRight } from 'lucide-react';
 import type { Post, Submolt, Agent, PostSort } from '@/types';
 
-// Feed container with infinite scroll
+// 무한 스크롤이 있는 피드 컨테이너
 export function Feed() {
   const { posts, sort, isLoading, hasMore, setSort, loadMore } = useFeedStore();
   const { ref } = useInfiniteScroll(loadMore, hasMore);
@@ -20,25 +20,25 @@ export function Feed() {
       <Card className="p-3">
         <FeedSortTabs value={sort} onChange={(v) => setSort(v as PostSort)} />
       </Card>
-      
+
       <PostList posts={posts} isLoading={isLoading && posts.length === 0} />
-      
+
       {hasMore && (
         <div ref={ref} className="flex justify-center py-8">
           {isLoading && <Spinner />}
         </div>
       )}
-      
+
       {!hasMore && posts.length > 0 && (
         <div className="text-center py-8">
-          <p className="text-muted-foreground">You've reached the end 🎉</p>
+          <p className="text-muted-foreground">끝까지 다 보셨습니다 🎉</p>
         </div>
       )}
     </div>
   );
 }
 
-// Trending posts widget
+// 트렌드 게시글 위젯
 export function TrendingPosts({ posts }: { posts: Post[] }) {
   if (!posts.length) return null;
 
@@ -46,7 +46,7 @@ export function TrendingPosts({ posts }: { posts: Post[] }) {
     <Card className="p-4">
       <div className="flex items-center gap-2 mb-3">
         <TrendingUp className="h-5 w-5 text-primary" />
-        <h3 className="font-semibold">Trending Today</h3>
+        <h3 className="font-semibold">오늘의 트렌드</h3>
       </div>
       <div className="space-y-3">
         {posts.slice(0, 5).map((post, i) => (
@@ -54,7 +54,7 @@ export function TrendingPosts({ posts }: { posts: Post[] }) {
             <span className="text-2xl font-bold text-muted-foreground/50 w-6">{i + 1}</span>
             <div className="flex-1 min-w-0">
               <p className="font-medium text-sm line-clamp-2 group-hover:text-primary transition-colors">{post.title}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">{formatScore(post.score)} points • m/{post.submolt}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{formatScore(post.score)} 포인트 • m/{post.submolt}</p>
             </div>
           </Link>
         ))}
@@ -63,7 +63,7 @@ export function TrendingPosts({ posts }: { posts: Post[] }) {
   );
 }
 
-// Popular submolts widget
+// 인기 커뮤니티 위젯
 export function PopularSubmolts({ submolts }: { submolts: Submolt[] }) {
   if (!submolts.length) return null;
 
@@ -72,9 +72,9 @@ export function PopularSubmolts({ submolts }: { submolts: Submolt[] }) {
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Users className="h-5 w-5 text-primary" />
-          <h3 className="font-semibold">Popular Communities</h3>
+          <h3 className="font-semibold">인기 커뮤니티</h3>
         </div>
-        <Link href="/submolts" className="text-xs text-primary hover:underline">See all</Link>
+        <Link href="/submolts" className="text-xs text-primary hover:underline">전체 보기</Link>
       </div>
       <div className="space-y-2">
         {submolts.slice(0, 5).map((submolt, i) => (
@@ -85,7 +85,7 @@ export function PopularSubmolts({ submolts }: { submolts: Submolt[] }) {
             </Avatar>
             <div className="flex-1 min-w-0">
               <p className="font-medium text-sm">m/{submolt.name}</p>
-              <p className="text-xs text-muted-foreground">{formatScore(submolt.subscriberCount)} members</p>
+              <p className="text-xs text-muted-foreground">{formatScore(submolt.subscriberCount)} 멤버</p>
             </div>
           </Link>
         ))}
@@ -94,7 +94,7 @@ export function PopularSubmolts({ submolts }: { submolts: Submolt[] }) {
   );
 }
 
-// Active agents widget
+// 활동 중인 에이전트 위젯
 export function ActiveAgents({ agents }: { agents: Agent[] }) {
   if (!agents.length) return null;
 
@@ -102,7 +102,7 @@ export function ActiveAgents({ agents }: { agents: Agent[] }) {
     <Card className="p-4">
       <div className="flex items-center gap-2 mb-3">
         <Zap className="h-5 w-5 text-primary" />
-        <h3 className="font-semibold">Active Agents</h3>
+        <h3 className="font-semibold">활동 중인 에이전트</h3>
       </div>
       <div className="space-y-2">
         {agents.slice(0, 5).map(agent => (
@@ -112,7 +112,7 @@ export function ActiveAgents({ agents }: { agents: Agent[] }) {
             </Avatar>
             <div className="flex-1 min-w-0">
               <p className="font-medium text-sm">u/{agent.name}</p>
-              <p className="text-xs text-muted-foreground">{formatScore(agent.karma)} karma</p>
+              <p className="text-xs text-muted-foreground">{formatScore(agent.karma)} 카르마</p>
             </div>
           </Link>
         ))}
@@ -121,7 +121,7 @@ export function ActiveAgents({ agents }: { agents: Agent[] }) {
   );
 }
 
-// Feed sidebar
+// 피드 사이드바
 export function FeedSidebar({ trendingPosts, popularSubmolts, activeAgents }: {
   trendingPosts?: Post[];
   popularSubmolts?: Submolt[];
@@ -132,15 +132,15 @@ export function FeedSidebar({ trendingPosts, popularSubmolts, activeAgents }: {
       {trendingPosts && <TrendingPosts posts={trendingPosts} />}
       {popularSubmolts && <PopularSubmolts submolts={popularSubmolts} />}
       {activeAgents && <ActiveAgents agents={activeAgents} />}
-      
-      {/* Footer links */}
+
+      {/* 푸터 링크 */}
       <Card className="p-4">
         <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-          <Link href="/about" className="hover:text-foreground">About</Link>
+          <Link href="/about" className="hover:text-foreground">소개</Link>
           <span>•</span>
-          <Link href="/terms" className="hover:text-foreground">Terms</Link>
+          <Link href="/terms" className="hover:text-foreground">이용약관</Link>
           <span>•</span>
-          <Link href="/privacy" className="hover:text-foreground">Privacy</Link>
+          <Link href="/privacy" className="hover:text-foreground">개인정보</Link>
           <span>•</span>
           <Link href="/api" className="hover:text-foreground">API</Link>
         </div>
@@ -150,20 +150,20 @@ export function FeedSidebar({ trendingPosts, popularSubmolts, activeAgents }: {
   );
 }
 
-// Empty feed state
+// 빈 피드 상태
 export function EmptyFeed({ message }: { message?: string }) {
   return (
     <Card className="p-8 text-center">
       <div className="h-16 w-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
         <Flame className="h-8 w-8 text-muted-foreground" />
       </div>
-      <h3 className="font-semibold mb-2">No posts yet</h3>
-      <p className="text-sm text-muted-foreground">{message || 'Be the first to post something!'}</p>
+      <h3 className="font-semibold mb-2">아직 게시글이 없습니다</h3>
+      <p className="text-sm text-muted-foreground">{message || '첫 번째 게시글을 작성해보세요!'}</p>
     </Card>
   );
 }
 
-// Loading feed state
+// 피드 로딩 상태
 export function FeedLoading() {
   return (
     <div className="flex justify-center py-12">

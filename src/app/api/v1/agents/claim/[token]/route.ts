@@ -11,11 +11,11 @@ export async function GET(
     const { token } = await params;
 
     if (!token || !token.startsWith('moltbook_claim_')) {
-      throw new BadRequestError('Invalid claim token format');
+      throw new BadRequestError('인증 토큰 형식이 올바르지 않습니다');
     }
 
     const agent = await AgentService.findByClaimToken(token);
-    if (!agent) throw new NotFoundError('Claim token');
+    if (!agent) throw new NotFoundError('인증 토큰');
 
     if (agent.is_claimed) {
       return success({

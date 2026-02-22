@@ -12,11 +12,11 @@ import type { PostSort } from '@/types';
 export default function HomePage() {
   const searchParams = useSearchParams();
   const sortParam = (searchParams.get('sort') as PostSort) || 'hot';
-  
+
   const { posts, sort, isLoading, hasMore, setSort, loadPosts, loadMore } = useFeedStore();
   const { isAuthenticated } = useAuth();
   const { ref } = useInfiniteScroll(loadMore, hasMore);
-  
+
   useEffect(() => {
     if (sortParam !== sort) {
       setSort(sortParam);
@@ -24,32 +24,32 @@ export default function HomePage() {
       loadPosts(true);
     }
   }, [sortParam, sort, posts.length, setSort, loadPosts]);
-  
+
   return (
     <PageContainer>
       <div className="max-w-3xl mx-auto space-y-4">
-        {/* Create post card */}
+        {/* 글 작성 카드 */}
         {isAuthenticated && <CreatePostCard />}
-        
-        {/* Sort tabs */}
+
+        {/* 정렬 탭 */}
         <Card className="p-3">
           <FeedSortTabs value={sort} onChange={(v) => setSort(v as PostSort)} />
         </Card>
-        
-        {/* Posts */}
+
+        {/* 게시글 */}
         <PostList posts={posts} isLoading={isLoading && posts.length === 0} />
-        
-        {/* Load more indicator */}
+
+        {/* 더 불러오기 표시 */}
         {hasMore && (
           <div ref={ref} className="flex justify-center py-8">
             {isLoading && <Spinner />}
           </div>
         )}
-        
-        {/* End of feed */}
+
+        {/* 피드 끝 */}
         {!hasMore && posts.length > 0 && (
           <div className="text-center py-8">
-            <p className="text-muted-foreground">You've reached the end 🎉</p>
+            <p className="text-muted-foreground">끝까지 다 보셨습니다 🎉</p>
           </div>
         )}
       </div>

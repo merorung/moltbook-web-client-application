@@ -10,21 +10,21 @@ import { Button, Avatar, AvatarImage, AvatarFallback, Input, Skeleton } from '@/
 import { Home, Search, Bell, Plus, Menu, X, Settings, LogOut, User, Flame, Clock, TrendingUp, Zap, ChevronDown, Moon, Sun, Hash, Users } from 'lucide-react';
 import { getInitials } from '@/lib/utils';
 
-// Header
+// 헤더
 export function Header() {
   const { agent, isAuthenticated, logout } = useAuth();
   const { toggleMobileMenu, mobileMenuOpen, openSearch, openCreatePost } = useUIStore();
   const { unreadCount } = useNotificationStore();
   const isMobile = useIsMobile();
   const [showUserMenu, setShowUserMenu] = React.useState(false);
-  
+
   useKeyboardShortcut('k', openSearch, { ctrl: true });
   useKeyboardShortcut('n', openCreatePost, { ctrl: true });
-  
+
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container-main flex h-14 items-center justify-between gap-4">
-        {/* Logo */}
+        {/* 로고 */}
         <div className="flex items-center gap-4">
           {isMobile && (
             <Button variant="ghost" size="icon" onClick={toggleMobileMenu}>
@@ -38,26 +38,26 @@ export function Header() {
             {!isMobile && <span className="gradient-text">moltbook</span>}
           </Link>
         </div>
-        
-        {/* Search */}
+
+        {/* 검색 */}
         {!isMobile && (
           <div className="flex-1 max-w-md">
             <button onClick={openSearch} className="w-full flex items-center gap-2 px-3 py-2 rounded-md border bg-muted/50 text-muted-foreground text-sm hover:bg-muted transition-colors">
               <Search className="h-4 w-4" />
-              <span>Search moltbook...</span>
+              <span>Moltbook 검색...</span>
               <kbd className="ml-auto text-xs bg-background px-1.5 py-0.5 rounded border">⌘K</kbd>
             </button>
           </div>
         )}
-        
-        {/* Actions */}
+
+        {/* 액션 */}
         <div className="flex items-center gap-2">
           {isMobile && (
             <Button variant="ghost" size="icon" onClick={openSearch}>
               <Search className="h-5 w-5" />
             </Button>
           )}
-          
+
           {isAuthenticated ? (
             <>
               <Button variant="ghost" size="icon" className="relative">
@@ -68,12 +68,12 @@ export function Header() {
                   </span>
                 )}
               </Button>
-              
+
               <Button onClick={openCreatePost} size="sm" className="gap-1">
                 <Plus className="h-4 w-4" />
-                {!isMobile && 'Create'}
+                {!isMobile && '만들기'}
               </Button>
-              
+
               <div className="relative">
                 <button onClick={() => setShowUserMenu(!showUserMenu)} className="flex items-center gap-2 p-1 rounded-md hover:bg-muted transition-colors">
                   <Avatar className="h-8 w-8">
@@ -82,7 +82,7 @@ export function Header() {
                   </Avatar>
                   {!isMobile && <ChevronDown className="h-4 w-4 text-muted-foreground" />}
                 </button>
-                
+
                 {showUserMenu && (
                   <div className="absolute right-0 top-full mt-2 w-56 rounded-md border bg-popover p-1 shadow-lg animate-in fade-in-0 zoom-in-95">
                     <div className="px-3 py-2 border-b mb-1">
@@ -90,13 +90,13 @@ export function Header() {
                       <p className="text-xs text-muted-foreground">u/{agent?.name}</p>
                     </div>
                     <Link href={`/u/${agent?.name}`} className="flex items-center gap-2 px-3 py-2 text-sm rounded hover:bg-muted" onClick={() => setShowUserMenu(false)}>
-                      <User className="h-4 w-4" /> Profile
+                      <User className="h-4 w-4" /> 프로필
                     </Link>
                     <Link href="/settings" className="flex items-center gap-2 px-3 py-2 text-sm rounded hover:bg-muted" onClick={() => setShowUserMenu(false)}>
-                      <Settings className="h-4 w-4" /> Settings
+                      <Settings className="h-4 w-4" /> 설정
                     </Link>
                     <button onClick={() => { logout(); setShowUserMenu(false); }} className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded hover:bg-muted text-destructive">
-                      <LogOut className="h-4 w-4" /> Log out
+                      <LogOut className="h-4 w-4" /> 로그아웃
                     </button>
                   </div>
                 )}
@@ -105,10 +105,10 @@ export function Header() {
           ) : (
             <div className="flex items-center gap-2">
               <Link href="/auth/login">
-                <Button variant="ghost" size="sm">Log in</Button>
+                <Button variant="ghost" size="sm">로그인</Button>
               </Link>
               <Link href="/auth/register">
-                <Button size="sm">Sign up</Button>
+                <Button size="sm">가입</Button>
               </Link>
             </div>
           )}
@@ -118,20 +118,20 @@ export function Header() {
   );
 }
 
-// Sidebar
+// 사이드바
 export function Sidebar() {
   const pathname = usePathname();
   const { sidebarOpen } = useUIStore();
   const { isAuthenticated } = useAuth();
-  
+
   const mainLinks = [
-    { href: '/', label: 'Home', icon: Home },
-    { href: '/?sort=hot', label: 'Hot', icon: Flame },
-    { href: '/?sort=new', label: 'New', icon: Clock },
-    { href: '/?sort=rising', label: 'Rising', icon: TrendingUp },
-    { href: '/?sort=top', label: 'Top', icon: Zap },
+    { href: '/', label: '홈', icon: Home },
+    { href: '/?sort=hot', label: '인기', icon: Flame },
+    { href: '/?sort=new', label: '최신', icon: Clock },
+    { href: '/?sort=rising', label: '급상승', icon: TrendingUp },
+    { href: '/?sort=top', label: '상위', icon: Zap },
   ];
-  
+
   const popularSubmolts = [
     { name: 'general', displayName: 'General' },
     { name: 'announcements', displayName: 'Announcements' },
@@ -139,13 +139,13 @@ export function Sidebar() {
     { name: 'help', displayName: 'Help' },
     { name: 'meta', displayName: 'Meta' },
   ];
-  
+
   if (!sidebarOpen) return null;
-  
+
   return (
     <aside className="sticky top-14 h-[calc(100vh-3.5rem)] w-64 shrink-0 border-r bg-background overflow-y-auto scrollbar-hide hidden lg:block">
       <nav className="p-4 space-y-6">
-        {/* Main Links */}
+        {/* 메인 링크 */}
         <div className="space-y-1">
           {mainLinks.map(link => {
             const Icon = link.icon;
@@ -158,10 +158,10 @@ export function Sidebar() {
             );
           })}
         </div>
-        
-        {/* Popular Submolts */}
+
+        {/* 인기 커뮤니티 */}
         <div>
-          <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Popular Submolts</h3>
+          <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">인기 커뮤니티</h3>
           <div className="space-y-1">
             {popularSubmolts.map(submolt => (
               <Link key={submolt.name} href={`/m/${submolt.name}`} className={cn('flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors', pathname === `/m/${submolt.name}` ? 'bg-muted font-medium' : 'hover:bg-muted')}>
@@ -171,18 +171,18 @@ export function Sidebar() {
             ))}
           </div>
         </div>
-        
-        {/* Explore */}
+
+        {/* 탐색 */}
         <div>
-          <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Explore</h3>
+          <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">탐색</h3>
           <div className="space-y-1">
             <Link href="/submolts" className="flex items-center gap-3 px-3 py-2 rounded-md text-sm hover:bg-muted transition-colors">
               <Hash className="h-4 w-4" />
-              All Submolts
+              모든 커뮤니티
             </Link>
             <Link href="/agents" className="flex items-center gap-3 px-3 py-2 rounded-md text-sm hover:bg-muted transition-colors">
               <Users className="h-4 w-4" />
-              Agents
+              에이전트
             </Link>
           </div>
         </div>
@@ -191,14 +191,14 @@ export function Sidebar() {
   );
 }
 
-// Mobile Menu
+// 모바일 메뉴
 export function MobileMenu() {
   const pathname = usePathname();
   const { mobileMenuOpen, toggleMobileMenu } = useUIStore();
   const { agent, isAuthenticated } = useAuth();
-  
+
   if (!mobileMenuOpen) return null;
-  
+
   return (
     <div className="fixed inset-0 z-50 lg:hidden">
       <div className="fixed inset-0 bg-black/50" onClick={toggleMobileMenu} />
@@ -213,18 +213,18 @@ export function MobileMenu() {
                 </Avatar>
                 <div>
                   <p className="font-medium">{agent.displayName || agent.name}</p>
-                  <p className="text-xs text-muted-foreground">{agent.karma} karma</p>
+                  <p className="text-xs text-muted-foreground">{agent.karma} 카르마</p>
                 </div>
               </div>
             </div>
           )}
-          
+
           <div className="space-y-1">
             <Link href="/" onClick={toggleMobileMenu} className={cn('flex items-center gap-3 px-3 py-2 rounded-md', pathname === '/' && 'bg-muted font-medium')}>
-              <Home className="h-4 w-4" /> Home
+              <Home className="h-4 w-4" /> 홈
             </Link>
             <Link href="/search" onClick={toggleMobileMenu} className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted">
-              <Search className="h-4 w-4" /> Search
+              <Search className="h-4 w-4" /> 검색
             </Link>
           </div>
         </nav>
@@ -233,7 +233,7 @@ export function MobileMenu() {
   );
 }
 
-// Footer
+// 푸터
 export function Footer() {
   return (
     <footer className="border-t py-8 mt-auto">
@@ -243,12 +243,12 @@ export function Footer() {
             <div className="h-6 w-6 rounded bg-gradient-to-br from-primary to-moltbook-400 flex items-center justify-center">
               <span className="text-white text-xs font-bold">M</span>
             </div>
-            <span className="text-sm text-muted-foreground">© 2025 Moltbook. The social network for AI agents.</span>
+            <span className="text-sm text-muted-foreground">© 2025 Moltbook. AI 에이전트를 위한 소셜 네트워크.</span>
           </div>
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <Link href="/about" className="hover:text-foreground transition-colors">About</Link>
-            <Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link>
-            <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
+            <Link href="/about" className="hover:text-foreground transition-colors">소개</Link>
+            <Link href="/terms" className="hover:text-foreground transition-colors">이용약관</Link>
+            <Link href="/privacy" className="hover:text-foreground transition-colors">개인정보</Link>
             <Link href="/api" className="hover:text-foreground transition-colors">API</Link>
           </div>
         </div>
@@ -257,12 +257,12 @@ export function Footer() {
   );
 }
 
-// Page Container
+// 페이지 컨테이너
 export function PageContainer({ children, className }: { children: React.ReactNode; className?: string }) {
   return <div className={cn('flex-1 py-6', className)}>{children}</div>;
 }
 
-// Main Layout
+// 메인 레이아웃
 export function MainLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col">

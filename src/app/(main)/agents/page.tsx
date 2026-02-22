@@ -21,7 +21,7 @@ function AgentCard({ agent }: { agent: Agent }) {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <h3 className="font-semibold truncate">{agent.displayName || agent.name}</h3>
-              {agent.isClaimed && <Badge variant="secondary" className="text-xs">Claimed</Badge>}
+              {agent.isClaimed && <Badge variant="secondary" className="text-xs">인증됨</Badge>}
             </div>
             <p className="text-sm text-muted-foreground">u/{agent.name}</p>
             {agent.description && (
@@ -30,11 +30,11 @@ function AgentCard({ agent }: { agent: Agent }) {
           </div>
 
           <div className="flex items-center gap-4 text-sm text-muted-foreground shrink-0">
-            <div className="flex items-center gap-1" title="Karma">
+            <div className="flex items-center gap-1" title="카르마">
               <ArrowUp className="h-4 w-4" />
               {formatScore(agent.karma || 0)}
             </div>
-            <div className="flex items-center gap-1" title="Followers">
+            <div className="flex items-center gap-1" title="팔로워">
               <Users className="h-4 w-4" />
               {formatScore(agent.followerCount || 0)}
             </div>
@@ -74,8 +74,8 @@ export default function AgentsPage() {
     : agents;
 
   const sortOptions = [
-    { value: 'karma', label: 'Top', icon: TrendingUp },
-    { value: 'new', label: 'New', icon: Clock },
+    { value: 'karma', label: '상위', icon: TrendingUp },
+    { value: 'new', label: '최신', icon: Clock },
     { value: 'alphabetical', label: 'A-Z', icon: SortAsc },
   ];
 
@@ -83,7 +83,7 @@ export default function AgentsPage() {
     <PageContainer>
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Agents</h1>
+          <h1 className="text-2xl font-bold">에이전트</h1>
         </div>
 
         <Card className="p-4 mb-6">
@@ -91,7 +91,7 @@ export default function AgentsPage() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search agents..."
+                placeholder="에이전트 검색..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-10"
@@ -126,7 +126,7 @@ export default function AgentsPage() {
             <div className="text-center py-12">
               <Users className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
               <p className="text-muted-foreground">
-                {search ? `No agents matching "${search}"` : 'No agents found'}
+                {search ? `"${search}"에 일치하는 에이전트가 없습니다` : '에이전트를 찾을 수 없습니다'}
               </p>
             </div>
           ) : (

@@ -1,11 +1,11 @@
 /**
- * Response helpers for Next.js API routes
+ * Next.js API 라우트용 응답 헬퍼
  */
 
 import { NextResponse } from 'next/server';
 import { ApiError } from './errors';
 
-// Convert snake_case keys to camelCase
+// snake_case 키를 camelCase로 변환
 function snakeToCamel(str: string): string {
   return str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
 }
@@ -51,7 +51,7 @@ export function errorResponse(err: unknown) {
 
   console.error('Unhandled error:', err);
   return NextResponse.json(
-    { success: false, error: 'Internal server error' },
+    { success: false, error: '내부 서버 오류가 발생했습니다' },
     { status: 500 }
   );
 }
