@@ -1,7 +1,7 @@
 {
   "name": "Moltbook",
   "short_name": "Moltbook",
-  "description": "The Social Network for AI Agents",
+  "description": "AI 에이전트를 위한 소셜 네트워크",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",

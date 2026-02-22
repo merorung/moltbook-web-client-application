@@ -18,38 +18,38 @@ export default function PostPage() {
   const { data: comments, isLoading: commentsLoading, mutate: mutateComments } = useComments(params.id, { sort: commentSort });
   const { vote, isVoting } = usePostVote(params.id);
   const { isAuthenticated } = useAuth();
-  
+
   if (postError) return notFound();
-  
+
   const isUpvoted = post?.userVote === 'up';
   const isDownvoted = post?.userVote === 'down';
   const domain = post?.url ? extractDomain(post.url) : null;
-  
+
   const handleVote = async (direction: 'up' | 'down') => {
     if (!isAuthenticated) return;
     await vote(direction);
   };
-  
+
   const handleNewComment = (comment: Comment) => {
     mutateComments([...(comments || []), comment], false);
   };
-  
+
   return (
     <PageContainer>
       <div className="max-w-4xl mx-auto">
-        {/* Back button */}
+        {/* 뒤로가기 버튼 */}
         <Link href={post?.submolt ? getSubmoltUrl(post.submolt) : '/'} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4">
           <ArrowLeft className="h-4 w-4" />
-          Back to {post?.submolt ? `m/${post.submolt}` : 'feed'}
+          {post?.submolt ? `m/${post.submolt}` : '피드'}로 돌아가기
         </Link>
-        
-        {/* Post */}
+
+        {/* 게시글 */}
         <Card className="p-4 mb-4">
           {postLoading ? (
             <PostDetailSkeleton />
           ) : post ? (
             <>
-              {/* Meta */}
+              {/* 메타 정보 */}
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
                 <Link href={getSubmoltUrl(post.submolt)} className="submolt-badge">
                   m/{post.submolt}
@@ -65,8 +65,8 @@ export default function PostPage() {
                 <span>•</span>
                 <time title={formatDateTime(post.createdAt)}>{formatRelativeTime(post.createdAt)}</time>
               </div>
-              
-              {/* Title */}
+
+              {/* 제목 */}
               <h1 className="text-2xl font-bold mb-3">
                 {post.title}
                 {domain && (
@@ -76,15 +76,15 @@ export default function PostPage() {
                   </span>
                 )}
               </h1>
-              
-              {/* Content */}
+
+              {/* 본문 */}
               {post.content && (
                 <div className="prose-moltbook mb-4">
                   {post.content}
                 </div>
               )}
-              
-              {/* Link */}
+
+              {/* 링크 */}
               {post.url && (
                 <a href={post.url} target="_blank" rel="noopener noreferrer" className="block p-4 rounded-lg border bg-muted/50 hover:bg-muted transition-colors mb-4">
                   <div className="flex items-center gap-2 text-primary">
@@ -93,8 +93,8 @@ export default function PostPage() {
                   </div>
                 </a>
               )}
-              
-              {/* Actions */}
+
+              {/* 액션 */}
               <div className="flex items-center gap-2 pt-2 border-t">
                 <div className="flex items-center gap-1">
                   <button onClick={() => handleVote('up')} disabled={isVoting || !isAuthenticated} className={cn('vote-btn vote-btn-up', isUpvoted && 'active')}>
@@ -107,26 +107,26 @@ export default function PostPage() {
                     <ArrowBigDown className={cn('h-6 w-6', isDownvoted && 'fill-current')} />
                   </button>
                 </div>
-                
+
                 <Separator orientation="vertical" className="h-6" />
-                
+
                 <div className="flex items-center gap-1 text-muted-foreground">
                   <MessageSquare className="h-5 w-5" />
-                  <span className="text-sm">{post.commentCount} comments</span>
+                  <span className="text-sm">댓글 {post.commentCount}개</span>
                 </div>
-                
+
                 <button className="flex items-center gap-1.5 px-2 py-1 text-sm text-muted-foreground hover:bg-muted rounded transition-colors ml-auto">
                   <Share2 className="h-4 w-4" />
-                  Share
+                  공유
                 </button>
-                
+
                 {isAuthenticated && (
                   <button className={cn('flex items-center gap-1.5 px-2 py-1 text-sm text-muted-foreground hover:bg-muted rounded transition-colors', post.isSaved && 'text-primary')}>
                     <Bookmark className={cn('h-4 w-4', post.isSaved && 'fill-current')} />
-                    {post.isSaved ? 'Saved' : 'Save'}
+                    {post.isSaved ? '저장됨' : '저장'}
                   </button>
                 )}
-                
+
                 <button className="p-1 text-muted-foreground hover:bg-muted rounded transition-colors">
                   <MoreHorizontal className="h-5 w-5" />
                 </button>
@@ -134,23 +134,23 @@ export default function PostPage() {
             </>
           ) : null}
         </Card>
-        
-        {/* Comments section */}
+
+        {/* 댓글 섹션 */}
         <Card className="p-4">
-          {/* Comment form */}
+          {/* 댓글 작성 */}
           <div className="mb-6">
             <CommentForm postId={params.id} onSubmit={handleNewComment} />
           </div>
-          
+
           <Separator className="my-4" />
-          
-          {/* Comment sort */}
+
+          {/* 댓글 정렬 */}
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold">Comments ({post?.commentCount || 0})</h2>
+            <h2 className="font-semibold">댓글 ({post?.commentCount || 0})</h2>
             <CommentSort value={commentSort} onChange={(v) => setCommentSort(v as CommentSortType)} />
           </div>
-          
-          {/* Comments */}
+
+          {/* 댓글 */}
           <CommentList comments={comments || []} postId={params.id} isLoading={commentsLoading} />
         </Card>
       </div>

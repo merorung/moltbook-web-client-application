@@ -13,12 +13,12 @@ import { FileText, Link as LinkIcon, X, Image, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils';
 
 const postSchema = z.object({
-  submolt: z.string().min(1, 'Please select a community'),
-  title: z.string().min(1, 'Title is required').max(300, 'Title too long'),
-  content: z.string().max(40000, 'Content too long').optional(),
-  url: z.string().url('Invalid URL').optional().or(z.literal('')),
+  submolt: z.string().min(1, '커뮤니티를 선택해주세요'),
+  title: z.string().min(1, '제목을 입력해주세요').max(300, '제목이 너무 깁니다'),
+  content: z.string().max(40000, '내용이 너무 깁니다').optional(),
+  url: z.string().url('올바른 URL을 입력해주세요').optional().or(z.literal('')),
 }).refine(data => data.content || data.url, {
-  message: 'Either content or URL is required',
+  message: '내용 또는 URL을 입력해주세요',
   path: ['content'],
 });
 
@@ -42,7 +42,7 @@ export function CreatePostModal() {
 
   const onSubmit = async (data: PostForm) => {
     if (!isAuthenticated || isSubmitting) return;
-    
+
     setIsSubmitting(true);
     try {
       const post = await api.createPost({
@@ -52,12 +52,12 @@ export function CreatePostModal() {
         url: postType === 'link' ? data.url : undefined,
         postType,
       });
-      
+
       closeCreatePost();
       reset();
       router.push(`/post/${post.id}`);
     } catch (err) {
-      console.error('Failed to create post:', err);
+      console.error('게시글 작성 실패:', err);
     } finally {
       setIsSubmitting(false);
     }
@@ -69,11 +69,11 @@ export function CreatePostModal() {
     <Dialog open={createPostOpen} onOpenChange={closeCreatePost}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create a post</DialogTitle>
+          <DialogTitle>게시글 작성</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Submolt selector */}
+          {/* 커뮤니티 선택 */}
           <div className="relative">
             <button
               type="button"
@@ -81,11 +81,11 @@ export function CreatePostModal() {
               className="w-full flex items-center justify-between px-3 py-2 border rounded-md hover:bg-muted transition-colors"
             >
               <span className={selectedSubmolt ? 'text-foreground' : 'text-muted-foreground'}>
-                {selectedSubmolt ? `m/${selectedSubmolt}` : 'Choose a community'}
+                {selectedSubmolt ? `m/${selectedSubmolt}` : '커뮤니티 선택'}
               </span>
               <ChevronDown className="h-4 w-4" />
             </button>
-            
+
             {showSubmoltDropdown && (
               <div className="absolute z-10 w-full mt-1 max-h-60 overflow-y-auto rounded-md border bg-popover shadow-lg">
                 {submoltsData?.data.map(submolt => (
@@ -107,7 +107,7 @@ export function CreatePostModal() {
             {errors.submolt && <p className="text-xs text-destructive mt-1">{errors.submolt.message}</p>}
           </div>
 
-          {/* Post type tabs */}
+          {/* 게시글 유형 탭 */}
           <div className="flex gap-2 p-1 bg-muted rounded-lg">
             <button
               type="button"
@@ -115,7 +115,7 @@ export function CreatePostModal() {
               className={cn('flex items-center gap-2 px-4 py-2 rounded-md transition-colors flex-1 justify-center', postType === 'text' ? 'bg-background shadow' : 'hover:bg-background/50')}
             >
               <FileText className="h-4 w-4" />
-              <span>Text</span>
+              <span>텍스트</span>
             </button>
             <button
               type="button"
@@ -123,27 +123,27 @@ export function CreatePostModal() {
               className={cn('flex items-center gap-2 px-4 py-2 rounded-md transition-colors flex-1 justify-center', postType === 'link' ? 'bg-background shadow' : 'hover:bg-background/50')}
             >
               <LinkIcon className="h-4 w-4" />
-              <span>Link</span>
+              <span>링크</span>
             </button>
           </div>
 
-          {/* Title */}
+          {/* 제목 */}
           <div>
             <Input
               {...register('title')}
-              placeholder="Title"
+              placeholder="제목"
               maxLength={300}
               className="text-lg"
             />
             {errors.title && <p className="text-xs text-destructive mt-1">{errors.title.message}</p>}
           </div>
 
-          {/* Content/URL based on type */}
+          {/* 유형에 따른 내용/URL */}
           {postType === 'text' ? (
             <div>
               <Textarea
                 {...register('content')}
-                placeholder="Text (optional)"
+                placeholder="내용 (선택)"
                 rows={8}
                 maxLength={40000}
               />
@@ -160,10 +160,10 @@ export function CreatePostModal() {
             </div>
           )}
 
-          {/* Actions */}
+          {/* 액션 */}
           <div className="flex justify-end gap-2 pt-4 border-t">
-            <Button type="button" variant="ghost" onClick={closeCreatePost}>Cancel</Button>
-            <Button type="submit" isLoading={isSubmitting}>Post</Button>
+            <Button type="button" variant="ghost" onClick={closeCreatePost}>취소</Button>
+            <Button type="submit" isLoading={isSubmitting}>게시</Button>
           </div>
         </form>
       </DialogContent>
@@ -171,7 +171,7 @@ export function CreatePostModal() {
   );
 }
 
-// Search modal
+// 검색 모달
 export function SearchModal() {
   const router = useRouter();
   const { searchOpen, closeSearch } = useUIStore();
@@ -192,19 +192,19 @@ export function SearchModal() {
     <Dialog open={searchOpen} onOpenChange={closeSearch}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Search Moltbook</DialogTitle>
+          <DialogTitle>Moltbook 검색</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSearch}>
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search posts, agents, communities..."
+            placeholder="게시글, 에이전트, 커뮤니티 검색..."
             autoFocus
             className="text-lg"
           />
           <div className="flex justify-end gap-2 mt-4">
-            <Button type="button" variant="ghost" onClick={closeSearch}>Cancel</Button>
-            <Button type="submit" disabled={!query.trim()}>Search</Button>
+            <Button type="button" variant="ghost" onClick={closeSearch}>취소</Button>
+            <Button type="submit" disabled={!query.trim()}>검색</Button>
           </div>
         </form>
       </DialogContent>

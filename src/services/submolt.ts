@@ -1,6 +1,5 @@
 /**
- * Submolt Service - handles community management
- * Uses Supabase query builder
+ * 커뮤니티(Submolt) 서비스 - 커뮤니티 관리
  */
 
 import { getSupabase } from '@/lib/supabase';
@@ -18,19 +17,19 @@ export class SubmoltService {
     description?: string;
     creatorId: string;
   }) {
-    if (!name || typeof name !== 'string') throw new BadRequestError('Name is required');
+    if (!name || typeof name !== 'string') throw new BadRequestError('이름을 입력해주세요');
 
     const normalizedName = name.toLowerCase().trim();
 
     if (normalizedName.length < 2 || normalizedName.length > 24) {
-      throw new BadRequestError('Name must be 2-24 characters');
+      throw new BadRequestError('이름은 2~24자여야 합니다');
     }
     if (!/^[a-z0-9_]+$/.test(normalizedName)) {
-      throw new BadRequestError('Name can only contain lowercase letters, numbers, and underscores');
+      throw new BadRequestError('이름은 영소문자, 숫자, 밑줄(_)만 사용할 수 있습니다');
     }
 
     const reserved = ['admin', 'mod', 'api', 'www', 'moltbook', 'help', 'all', 'popular'];
-    if (reserved.includes(normalizedName)) throw new BadRequestError('This name is reserved');
+    if (reserved.includes(normalizedName)) throw new BadRequestError('예약된 이름입니다');
 
     const supabase = getSupabase();
 
@@ -40,7 +39,7 @@ export class SubmoltService {
       .eq('name', normalizedName)
       .maybeSingle();
 
-    if (existing) throw new ConflictError('Submolt name already taken');
+    if (existing) throw new ConflictError('이미 사용 중인 커뮤니티 이름입니다');
 
     const { data: submolt, error } = await supabase
       .from('submolts')
@@ -54,14 +53,14 @@ export class SubmoltService {
       .single();
 
     if (error) throw error;
-    if (!submolt) throw new Error('Failed to create submolt');
+    if (!submolt) throw new Error('커뮤니티 생성에 실패했습니다');
 
-    // Add creator as owner moderator
+    // 생성자를 소유자 모더레이터로 추가
     await supabase
       .from('submolt_moderators')
       .insert({ submolt_id: submolt.id, agent_id: creatorId, role: 'owner' });
 
-    // Auto-subscribe creator
+    // 생성자 자동 구독
     await this.subscribe(submolt.id, creatorId);
 
     return submolt;
@@ -77,9 +76,9 @@ export class SubmoltService {
       .maybeSingle();
 
     if (error) throw error;
-    if (!submolt) throw new NotFoundError('Submolt');
+    if (!submolt) throw new NotFoundError('커뮤니티');
 
-    // Get user's role if agentId provided
+    // agentId가 제공된 경우 해당 유저의 역할 조회
     let yourRole = null;
     if (agentId) {
       const { data: mod } = await supabase
@@ -192,7 +191,7 @@ export class SubmoltService {
       .maybeSingle();
 
     if (!mod || (mod.role !== 'owner' && mod.role !== 'moderator')) {
-      throw new ForbiddenError('You do not have permission to update this submolt');
+      throw new ForbiddenError('이 커뮤니티를 수정할 권한이 없습니다');
     }
 
     const allowedFields = ['description', 'display_name', 'banner_color', 'theme_color'];
@@ -204,7 +203,7 @@ export class SubmoltService {
       }
     }
 
-    if (Object.keys(updateData).length === 0) throw new BadRequestError('No valid fields to update');
+    if (Object.keys(updateData).length === 0) throw new BadRequestError('수정할 유효한 필드가 없습니다');
 
     updateData.updated_at = new Date().toISOString();
 
@@ -231,7 +230,7 @@ export class SubmoltService {
 
     if (error) throw error;
 
-    // Flatten nested agent data
+    // 중첩된 에이전트 데이터 펼치기
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (data || []).map((m: any) => ({
       name: m.agent?.name,
@@ -251,7 +250,7 @@ export class SubmoltService {
       .eq('agent_id', requesterId)
       .maybeSingle();
 
-    if (!requester || requester.role !== 'owner') throw new ForbiddenError('Only owners can add moderators');
+    if (!requester || requester.role !== 'owner') throw new ForbiddenError('소유자만 모더레이터를 추가할 수 있습니다');
 
     const { data: agent } = await supabase
       .from('agents')
@@ -259,7 +258,7 @@ export class SubmoltService {
       .eq('name', agentName.toLowerCase())
       .maybeSingle();
 
-    if (!agent) throw new NotFoundError('Agent');
+    if (!agent) throw new NotFoundError('에이전트');
 
     const { error } = await supabase
       .from('submolt_moderators')
@@ -282,7 +281,7 @@ export class SubmoltService {
       .eq('agent_id', requesterId)
       .maybeSingle();
 
-    if (!requester || requester.role !== 'owner') throw new ForbiddenError('Only owners can remove moderators');
+    if (!requester || requester.role !== 'owner') throw new ForbiddenError('소유자만 모더레이터를 삭제할 수 있습니다');
 
     const { data: agent } = await supabase
       .from('agents')
@@ -290,7 +289,7 @@ export class SubmoltService {
       .eq('name', agentName.toLowerCase())
       .maybeSingle();
 
-    if (!agent) throw new NotFoundError('Agent');
+    if (!agent) throw new NotFoundError('에이전트');
 
     const { data: target } = await supabase
       .from('submolt_moderators')
@@ -299,7 +298,7 @@ export class SubmoltService {
       .eq('agent_id', agent.id)
       .maybeSingle();
 
-    if (target?.role === 'owner') throw new ForbiddenError('Cannot remove owner');
+    if (target?.role === 'owner') throw new ForbiddenError('소유자는 삭제할 수 없습니다');
 
     await supabase
       .from('submolt_moderators')
