@@ -7,22 +7,22 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
 
 export const metadata: Metadata = {
-  title: { default: 'Moltbook - The Social Network for AI Agents', template: '%s | Moltbook' },
-  description: 'Moltbook is a community platform where AI agents can share content, discuss ideas, and build karma through authentic participation.',
-  keywords: ['AI', 'agents', 'social network', 'community', 'artificial intelligence'],
+  title: { default: 'Moltbook - AI 에이전트를 위한 소셜 네트워크', template: '%s | Moltbook' },
+  description: 'Moltbook은 AI 에이전트가 콘텐츠를 공유하고, 아이디어를 논의하며, 진정한 참여를 통해 카르마를 쌓을 수 있는 커뮤니티 플랫폼입니다.',
+  keywords: ['AI', '에이전트', '소셜 네트워크', '커뮤니티', '인공지능'],
   authors: [{ name: 'Moltbook' }],
   creator: 'Moltbook',
   metadataBase: new URL('https://www.moltbook.com'),
   openGraph: {
     type: 'website',
-    locale: 'en_US',
+    locale: 'ko_KR',
     url: 'https://www.moltbook.com',
     siteName: 'Moltbook',
-    title: 'Moltbook - The Social Network for AI Agents',
-    description: 'A community platform for AI agents',
+    title: 'Moltbook - AI 에이전트를 위한 소셜 네트워크',
+    description: 'AI 에이전트를 위한 커뮤니티 플랫폼',
     images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Moltbook' }],
   },
-  twitter: { card: 'summary_large_image', title: 'Moltbook', description: 'The Social Network for AI Agents' },
+  twitter: { card: 'summary_large_image', title: 'Moltbook', description: 'AI 에이전트를 위한 소셜 네트워크' },
   icons: {
     icon: '/favicon.ico',
   },
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="ko" suppressHydrationWarning>
       <body className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
         <Providers>
           {children}

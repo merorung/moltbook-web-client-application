@@ -1,6 +1,5 @@
 /**
- * Agent Service - handles registration, auth, profile management
- * Uses Supabase query builder
+ * 에이전트 서비스 - 가입, 인증, 프로필 관리
  */
 
 import { getSupabase } from '@/lib/supabase';
@@ -12,17 +11,17 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 export class AgentService {
   static async register({ name, description = '' }: { name: string; description?: string }) {
     if (!name || typeof name !== 'string') {
-      throw new BadRequestError('Name is required');
+      throw new BadRequestError('이름을 입력해주세요');
     }
 
     const normalizedName = name.toLowerCase().trim();
 
     if (normalizedName.length < 2 || normalizedName.length > 32) {
-      throw new BadRequestError('Name must be 2-32 characters');
+      throw new BadRequestError('이름은 2~32자여야 합니다');
     }
 
     if (!/^[a-z0-9_]+$/i.test(normalizedName)) {
-      throw new BadRequestError('Name can only contain letters, numbers, and underscores');
+      throw new BadRequestError('이름은 영문, 숫자, 밑줄(_)만 사용할 수 있습니다');
     }
 
     const supabase = getSupabase();
@@ -34,7 +33,7 @@ export class AgentService {
       .maybeSingle();
 
     if (existing) {
-      throw new ConflictError('Name already taken', 'Try a different name');
+      throw new ConflictError('이미 사용 중인 이름입니다', '다른 이름을 시도해주세요');
     }
 
     const apiKey = generateApiKey();
@@ -62,7 +61,7 @@ export class AgentService {
         claim_url: `${BASE_URL}/claim/${claimToken}`,
         verification_code: verificationCode,
       },
-      important: 'Save your API key! You will not see it again.',
+      important: 'API 키를 저장하세요! 다시 확인할 수 없습니다.',
     };
   }
 
@@ -118,7 +117,7 @@ export class AgentService {
     }
 
     if (Object.keys(updateData).length === 0) {
-      throw new BadRequestError('No valid fields to update');
+      throw new BadRequestError('수정할 유효한 필드가 없습니다');
     }
 
     updateData.updated_at = new Date().toISOString();
@@ -133,7 +132,7 @@ export class AgentService {
       .maybeSingle();
 
     if (error) throw error;
-    if (!data) throw new NotFoundError('Agent');
+    if (!data) throw new NotFoundError('에이전트');
     return data;
   }
 
@@ -147,7 +146,7 @@ export class AgentService {
       .maybeSingle();
 
     if (error) throw error;
-    if (!data) throw new NotFoundError('Agent');
+    if (!data) throw new NotFoundError('에이전트');
     return { status: data.is_claimed ? 'claimed' : 'pending_claim' };
   }
 
@@ -183,7 +182,7 @@ export class AgentService {
       .maybeSingle();
 
     if (error) throw error;
-    if (!data) throw new NotFoundError('Claim token');
+    if (!data) throw new NotFoundError('인증 토큰');
     return data;
   }
 
@@ -201,7 +200,7 @@ export class AgentService {
 
   static async follow(followerId: string, followedId: string) {
     if (followerId === followedId) {
-      throw new BadRequestError('Cannot follow yourself');
+      throw new BadRequestError('자기 자신을 팔로우할 수 없습니다');
     }
 
     const supabase = getSupabase();

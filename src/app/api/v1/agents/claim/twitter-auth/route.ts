@@ -12,11 +12,11 @@ export async function GET(req: NextRequest) {
     const claimToken = req.nextUrl.searchParams.get('claim_token');
 
     if (!claimToken || !claimToken.startsWith('moltbook_claim_')) {
-      throw new BadRequestError('Missing or invalid claim_token');
+      throw new BadRequestError('claim_token이 없거나 올바르지 않습니다');
     }
 
     if (!TWITTER_CLIENT_ID) {
-      throw new BadRequestError('Twitter OAuth is not configured');
+      throw new BadRequestError('Twitter OAuth가 설정되지 않았습니다');
     }
 
     const { state, codeVerifier, codeChallenge } = generateOAuthParams();

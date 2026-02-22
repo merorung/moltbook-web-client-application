@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { Button, Card, CardContent, Skeleton } from '@/components/ui';
 import { ChevronLeft, ChevronRight, AlertTriangle, RefreshCw, Home, ArrowUp } from 'lucide-react';
 
-// Empty State
+// 빈 상태
 interface EmptyStateProps {
   icon?: React.ReactNode;
   title: string;
@@ -31,14 +31,14 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
   );
 }
 
-// Error State
+// 오류 상태
 interface ErrorStateProps {
   title?: string;
   description?: string;
   onRetry?: () => void;
 }
 
-export function ErrorState({ title = 'Something went wrong', description = 'An error occurred while loading this content.', onRetry }: ErrorStateProps) {
+export function ErrorState({ title = '문제가 발생했습니다', description = '콘텐츠를 로딩하는 중 오류가 발생했습니다.', onRetry }: ErrorStateProps) {
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
       <AlertTriangle className="h-12 w-12 text-destructive/50 mb-4" />
@@ -47,19 +47,19 @@ export function ErrorState({ title = 'Something went wrong', description = 'An e
       {onRetry && (
         <Button variant="outline" onClick={onRetry} className="gap-2">
           <RefreshCw className="h-4 w-4" />
-          Try again
+          다시 시도
         </Button>
       )}
     </div>
   );
 }
 
-// Loading State
+// 로딩 상태
 interface LoadingStateProps {
   text?: string;
 }
 
-export function LoadingState({ text = 'Loading...' }: LoadingStateProps) {
+export function LoadingState({ text = '로딩 중...' }: LoadingStateProps) {
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4">
       <div className="h-8 w-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-4" />
@@ -68,7 +68,7 @@ export function LoadingState({ text = 'Loading...' }: LoadingStateProps) {
   );
 }
 
-// Pagination
+// 페이지네이션
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
@@ -79,27 +79,27 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
   const pages = React.useMemo(() => {
     const items: (number | 'ellipsis')[] = [];
     const showEllipsis = totalPages > 7;
-    
+
     if (!showEllipsis) {
       return Array.from({ length: totalPages }, (_, i) => i + 1);
     }
-    
+
     items.push(1);
     if (currentPage > 3) items.push('ellipsis');
-    
+
     const start = Math.max(2, currentPage - 1);
     const end = Math.min(totalPages - 1, currentPage + 1);
-    
+
     for (let i = start; i <= end; i++) items.push(i);
-    
+
     if (currentPage < totalPages - 2) items.push('ellipsis');
     if (totalPages > 1) items.push(totalPages);
-    
+
     return items;
   }, [currentPage, totalPages]);
-  
+
   if (totalPages <= 1) return null;
-  
+
   return (
     <div className="flex items-center justify-center gap-1">
       <Button
@@ -110,7 +110,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
       >
         <ChevronLeft className="h-4 w-4" />
       </Button>
-      
+
       {pages.map((page, i) => (
         page === 'ellipsis' ? (
           <span key={`ellipsis-${i}`} className="px-2">...</span>
@@ -125,7 +125,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
           </Button>
         )
       ))}
-      
+
       <Button
         variant="ghost"
         size="icon"
@@ -138,7 +138,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
   );
 }
 
-// Breadcrumbs
+// 브레드크럼
 interface BreadcrumbsProps {
   items: { label: string; href?: string }[];
 }
@@ -165,25 +165,25 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
   );
 }
 
-// Back to Top Button
+// 맨 위로 버튼
 export function BackToTop() {
   const [visible, setVisible] = React.useState(false);
-  
+
   React.useEffect(() => {
     const handleScroll = () => {
       setVisible(window.scrollY > 500);
     };
-    
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-  
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-  
+
   if (!visible) return null;
-  
+
   return (
     <Button
       variant="secondary"
@@ -196,7 +196,7 @@ export function BackToTop() {
   );
 }
 
-// Info Card
+// 정보 카드
 interface InfoCardProps {
   title: string;
   description?: string;
@@ -215,7 +215,7 @@ export function InfoCard({ title, description, children }: InfoCardProps) {
   );
 }
 
-// Stat Card
+// 통계 카드
 interface StatCardProps {
   label: string;
   value: string | number;
@@ -242,7 +242,7 @@ export function StatCard({ label, value, icon, trend }: StatCardProps) {
   );
 }
 
-// Content Placeholder
+// 콘텐츠 플레이스홀더
 export function ContentPlaceholder({ lines = 3 }: { lines?: number }) {
   return (
     <div className="space-y-3">
@@ -253,7 +253,7 @@ export function ContentPlaceholder({ lines = 3 }: { lines?: number }) {
   );
 }
 
-// Divider with Text
+// 텍스트가 있는 구분선
 export function DividerWithText({ text }: { text: string }) {
   return (
     <div className="flex items-center gap-4 my-4">
@@ -264,7 +264,7 @@ export function DividerWithText({ text }: { text: string }) {
   );
 }
 
-// Countdown
+// 카운트다운
 interface CountdownProps {
   targetDate: Date;
   onComplete?: () => void;
@@ -272,18 +272,18 @@ interface CountdownProps {
 
 export function Countdown({ targetDate, onComplete }: CountdownProps) {
   const [timeLeft, setTimeLeft] = React.useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  
+
   React.useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
       const diff = targetDate.getTime() - now.getTime();
-      
+
       if (diff <= 0) {
         clearInterval(interval);
         onComplete?.();
         return;
       }
-      
+
       setTimeLeft({
         days: Math.floor(diff / (1000 * 60 * 60 * 24)),
         hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
@@ -291,10 +291,10 @@ export function Countdown({ targetDate, onComplete }: CountdownProps) {
         seconds: Math.floor((diff / 1000) % 60),
       });
     }, 1000);
-    
+
     return () => clearInterval(interval);
   }, [targetDate, onComplete]);
-  
+
   return (
     <div className="flex items-center gap-4">
       {(['days', 'hours', 'minutes', 'seconds'] as const).map((unit) => (
