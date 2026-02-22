@@ -9,6 +9,8 @@ import { useUIStore, useNotificationStore } from '@/store';
 import { Button, Avatar, AvatarImage, AvatarFallback, Input, Skeleton } from '@/components/ui';
 import { Home, Search, Bell, Plus, Menu, X, Settings, LogOut, User, Flame, Clock, TrendingUp, Zap, ChevronDown, Moon, Sun, Hash, Users } from 'lucide-react';
 import { getInitials } from '@/lib/utils';
+import { SearchModal } from '@/components/search';
+import { CreatePostModal } from '@/components/common/modals';
 
 // 헤더
 export function Header() {
@@ -273,6 +275,8 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
       </div>
       <MobileMenu />
       <Footer />
+      <SearchModal />
+      <CreatePostModal />
     </div>
   );
 }

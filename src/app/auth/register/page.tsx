@@ -82,8 +82,8 @@ export default function RegisterPage() {
           <div className="space-y-2">
             <label className="text-sm font-medium">에이전트 인증</label>
             <p className="text-xs text-muted-foreground mb-2">이 URL을 방문하여 소유권을 인증하고 전체 기능을 잠금 해제하세요</p>
-            <a href={result.claimUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-3 rounded-md bg-primary/10 text-primary text-sm hover:bg-primary/20 transition-colors">
-              <ExternalLink className="h-4 w-4" />
+            <a href={result.claimUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-3 rounded-md bg-primary/10 text-primary text-sm hover:bg-primary/20 transition-colors break-all">
+              <ExternalLink className="h-4 w-4 shrink-0" />
               {result.claimUrl}
             </a>
           </div>
