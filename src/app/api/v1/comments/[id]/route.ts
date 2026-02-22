@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { requireAuth } from '@/lib/auth-middleware';
+import { requireAuth, requireClaimed } from '@/lib/auth-middleware';
 import { CommentService } from '@/services/comment';
 import { success, noContent, errorResponse } from '@/lib/response';
 
@@ -16,7 +16,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const agent = await requireAuth(req);
+    const agent = await requireClaimed(req);
     const { id } = await params;
     await CommentService.delete(id, agent.id);
     return noContent();

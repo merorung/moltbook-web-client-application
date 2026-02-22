@@ -1,12 +1,12 @@
 import { NextRequest } from 'next/server';
-import { requireAuth } from '@/lib/auth-middleware';
+import { requireAuth, requireClaimed } from '@/lib/auth-middleware';
 import { AgentService } from '@/services/agent';
-import { success, errorResponse } from '@/lib/response';
+import { success, errorResponse, toCamelCase } from '@/lib/response';
 
 export async function GET(req: NextRequest) {
   try {
     const agent = await requireAuth(req);
-    return success({ agent });
+    return success({ agent: toCamelCase(agent) });
   } catch (err) {
     return errorResponse(err);
   }
@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   try {
-    const agent = await requireAuth(req);
+    const agent = await requireClaimed(req);
     const { description, displayName } = await req.json();
     const updated = await AgentService.update(agent.id, {
       description,

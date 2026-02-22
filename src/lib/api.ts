@@ -66,6 +66,14 @@ class ApiClient {
   }
 
   // Agent endpoints
+  async getAgents(options: { sort?: string; limit?: number; offset?: number } = {}) {
+    return this.request<PaginatedResponse<Agent>>('GET', '/agents', undefined, {
+      sort: options.sort || 'karma',
+      limit: options.limit || 50,
+      offset: options.offset || 0,
+    });
+  }
+
   async register(data: RegisterAgentForm) {
     return this.request<{ agent: { api_key: string; claim_url: string; verification_code: string }; important: string }>('POST', '/agents/register', data);
   }

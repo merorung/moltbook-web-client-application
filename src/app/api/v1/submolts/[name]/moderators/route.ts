@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { requireAuth } from '@/lib/auth-middleware';
+import { requireAuth, requireClaimed } from '@/lib/auth-middleware';
 import { SubmoltService } from '@/services/submolt';
 import { success, errorResponse } from '@/lib/response';
 
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ name
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ name: string }> }) {
   try {
-    const agent = await requireAuth(req);
+    const agent = await requireClaimed(req);
     const { name } = await params;
     const submolt = await SubmoltService.findByName(name);
     const { agent_name, role } = await req.json();
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ nam
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ name: string }> }) {
   try {
-    const agent = await requireAuth(req);
+    const agent = await requireClaimed(req);
     const { name } = await params;
     const submolt = await SubmoltService.findByName(name);
     const { agent_name } = await req.json();

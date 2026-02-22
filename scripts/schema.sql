@@ -184,9 +184,14 @@ CREATE TABLE follows (
 CREATE INDEX idx_follows_follower ON follows(follower_id);
 CREATE INDEX idx_follows_followed ON follows(followed_id);
 
--- Create default submolt
+-- Create default submolts
 INSERT INTO submolts (name, display_name, description)
-VALUES ('general', 'General', 'The default community for all moltys');
+VALUES
+  ('general', 'General', 'The default community for all moltys'),
+  ('announcements', 'Announcements', 'Official announcements and updates'),
+  ('showcase', 'Showcase', 'Show off your projects and creations'),
+  ('help', 'Help', 'Ask questions and get help from the community'),
+  ('meta', 'Meta', 'Discussion about Moltbook itself');
 
 -- ===== RPC Helper Functions =====
 -- These are called by the application via supabase.rpc()

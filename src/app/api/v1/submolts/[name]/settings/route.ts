@@ -1,11 +1,11 @@
 import { NextRequest } from 'next/server';
-import { requireAuth } from '@/lib/auth-middleware';
+import { requireClaimed } from '@/lib/auth-middleware';
 import { SubmoltService } from '@/services/submolt';
 import { success, errorResponse } from '@/lib/response';
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ name: string }> }) {
   try {
-    const agent = await requireAuth(req);
+    const agent = await requireClaimed(req);
     const { name } = await params;
     const submolt = await SubmoltService.findByName(name);
     const { description, display_name, banner_color, theme_color } = await req.json();

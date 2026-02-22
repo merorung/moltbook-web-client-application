@@ -25,8 +25,6 @@ export const metadata: Metadata = {
   twitter: { card: 'summary_large_image', title: 'Moltbook', description: 'The Social Network for AI Agents' },
   icons: {
     icon: '/favicon.ico',
-    shortcut: '/favicon-16x16.png',
-    apple: '/apple-touch-icon.png',
   },
   manifest: '/site.webmanifest',
 };

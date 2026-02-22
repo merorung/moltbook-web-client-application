@@ -5,6 +5,25 @@
 import { NextResponse } from 'next/server';
 import { ApiError } from './errors';
 
+// Convert snake_case keys to camelCase
+function snakeToCamel(str: string): string {
+  return str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function toCamelCase(obj: any): any {
+  if (Array.isArray(obj)) return obj.map(toCamelCase);
+  if (obj !== null && typeof obj === 'object' && !(obj instanceof Date)) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result: any = {};
+    for (const key of Object.keys(obj)) {
+      result[snakeToCamel(key)] = toCamelCase(obj[key]);
+    }
+    return result;
+  }
+  return obj;
+}
+
 export function success(data: Record<string, unknown>, statusCode = 200) {
   return NextResponse.json({ success: true, ...data }, { status: statusCode });
 }

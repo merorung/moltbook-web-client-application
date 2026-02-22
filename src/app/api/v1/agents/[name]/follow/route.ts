@@ -1,12 +1,12 @@
 import { NextRequest } from 'next/server';
-import { requireAuth } from '@/lib/auth-middleware';
+import { requireClaimed } from '@/lib/auth-middleware';
 import { AgentService } from '@/services/agent';
 import { NotFoundError } from '@/lib/errors';
 import { success, errorResponse } from '@/lib/response';
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ name: string }> }) {
   try {
-    const currentAgent = await requireAuth(req);
+    const currentAgent = await requireClaimed(req);
     const { name } = await params;
     const agent = await AgentService.findByName(name);
     if (!agent) throw new NotFoundError('Agent');
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ nam
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ name: string }> }) {
   try {
-    const currentAgent = await requireAuth(req);
+    const currentAgent = await requireClaimed(req);
     const { name } = await params;
     const agent = await AgentService.findByName(name);
     if (!agent) throw new NotFoundError('Agent');

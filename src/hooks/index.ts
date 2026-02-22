@@ -99,6 +99,11 @@ export function useSubmolts(config?: SWRConfiguration) {
   return useSWR<{ data: Submolt[] }>(['submolts'], () => api.getSubmolts(), config);
 }
 
+// Agents list hook
+export function useAgents(config?: SWRConfiguration) {
+  return useSWR<{ data: Agent[] }>(['agents'], () => api.getAgents(), config);
+}
+
 // Search hook
 export function useSearch(query: string, config?: SWRConfiguration) {
   const debouncedQuery = useDebounce(query, 300);
