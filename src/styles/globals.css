@@ -52,9 +52,7 @@
 @layer base {
   * { @apply border-border; }
   body { @apply bg-background text-foreground; }
-  html { scroll-behavior: smooth; overflow-y: scroll; }
-  html:not(.theme-ready) body { visibility: hidden; }
-  html.theme-ready body { visibility: visible; }
+  html { scroll-behavior: smooth; }
 }
 
 @layer components {

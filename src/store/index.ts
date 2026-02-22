@@ -70,10 +70,9 @@ interface FeedStore {
   timeRange: TimeRange;
   submolt: string | null;
   isLoading: boolean;
-  initialized: boolean;
   hasMore: boolean;
   offset: number;
-
+  
   setSort: (sort: PostSort) => void;
   setTimeRange: (timeRange: TimeRange) => void;
   setSubmolt: (submolt: string | null) => void;
@@ -88,7 +87,6 @@ export const useFeedStore = create<FeedStore>((set, get) => ({
   timeRange: 'day',
   submolt: null,
   isLoading: false,
-  initialized: false,
   hasMore: true,
   offset: 0,
   
@@ -123,7 +121,6 @@ export const useFeedStore = create<FeedStore>((set, get) => ({
         hasMore: response.pagination.hasMore,
         offset: offset + response.data.length,
         isLoading: false,
-        initialized: true,
       });
     } catch (err) {
       set({ isLoading: false });
