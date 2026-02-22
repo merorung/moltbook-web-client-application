@@ -15,30 +15,30 @@ export default function SearchPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get('q') || '';
-
+  
   const [query, setQuery] = useState(initialQuery);
   const [activeTab, setActiveTab] = useState('all');
   const debouncedQuery = useDebounce(query, 300);
   const { data, isLoading, error } = useSearch(debouncedQuery);
-
+  
   useEffect(() => {
     if (debouncedQuery) {
       router.replace(`/search?q=${encodeURIComponent(debouncedQuery)}`, { scroll: false });
     }
   }, [debouncedQuery, router]);
-
+  
   const totalResults = (data?.posts?.length || 0) + (data?.agents?.length || 0) + (data?.submolts?.length || 0);
-
+  
   return (
     <PageContainer>
       <div className="max-w-4xl mx-auto">
-        {/* 검색 입력 */}
+        {/* Search input */}
         <div className="mb-6">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <input
               type="text"
-              placeholder="게시글, 에이전트, 커뮤니티 검색..."
+              placeholder="Search posts, agents, and submolts..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="w-full h-12 pl-12 pr-12 rounded-lg border bg-background text-lg focus:outline-none focus:ring-2 focus:ring-ring"
@@ -51,47 +51,47 @@ export default function SearchPage() {
             )}
           </div>
         </div>
-
-        {/* 결과 */}
+        
+        {/* Results */}
         {debouncedQuery.length >= 2 ? (
           <>
-            {/* 탭 */}
+            {/* Tabs */}
             <TabsPrimitive.Root value={activeTab} onValueChange={setActiveTab}>
               <Card className="mb-4">
                 <TabsPrimitive.List className="flex border-b">
                   <TabsPrimitive.Trigger value="all" className={cn('flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors', activeTab === 'all' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground')}>
-                    전체
+                    All
                     {data && <Badge variant="secondary" className="text-xs">{totalResults}</Badge>}
                   </TabsPrimitive.Trigger>
                   <TabsPrimitive.Trigger value="posts" className={cn('flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors', activeTab === 'posts' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground')}>
                     <FileText className="h-4 w-4" />
-                    게시글
+                    Posts
                     {data?.posts && <Badge variant="secondary" className="text-xs">{data.posts.length}</Badge>}
                   </TabsPrimitive.Trigger>
                   <TabsPrimitive.Trigger value="agents" className={cn('flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors', activeTab === 'agents' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground')}>
                     <Users className="h-4 w-4" />
-                    에이전트
+                    Agents
                     {data?.agents && <Badge variant="secondary" className="text-xs">{data.agents.length}</Badge>}
                   </TabsPrimitive.Trigger>
                   <TabsPrimitive.Trigger value="submolts" className={cn('flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors', activeTab === 'submolts' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground')}>
                     <Hash className="h-4 w-4" />
-                    커뮤니티
+                    Submolts
                     {data?.submolts && <Badge variant="secondary" className="text-xs">{data.submolts.length}</Badge>}
                   </TabsPrimitive.Trigger>
                 </TabsPrimitive.List>
               </Card>
-
+              
               {isLoading ? (
                 <SearchSkeleton />
               ) : (
                 <>
                   <TabsPrimitive.Content value="all" className="space-y-4">
-                    {/* 에이전트 섹션 */}
+                    {/* Agents section */}
                     {data?.agents && data.agents.length > 0 && (
                       <Card>
                         <CardHeader className="pb-2">
                           <CardTitle className="text-base flex items-center gap-2">
-                            <Users className="h-4 w-4" /> 에이전트
+                            <Users className="h-4 w-4" /> Agents
                           </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -102,19 +102,19 @@ export default function SearchPage() {
                           </div>
                           {data.agents.length > 3 && (
                             <button onClick={() => setActiveTab('agents')} className="mt-2 text-sm text-primary hover:underline">
-                              에이전트 {data.agents.length}개 전체 보기 →
+                              View all {data.agents.length} agents →
                             </button>
                           )}
                         </CardContent>
                       </Card>
                     )}
-
-                    {/* 커뮤니티 섹션 */}
+                    
+                    {/* Submolts section */}
                     {data?.submolts && data.submolts.length > 0 && (
                       <Card>
                         <CardHeader className="pb-2">
                           <CardTitle className="text-base flex items-center gap-2">
-                            <Hash className="h-4 w-4" /> 커뮤니티
+                            <Hash className="h-4 w-4" /> Submolts
                           </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -125,36 +125,36 @@ export default function SearchPage() {
                           </div>
                           {data.submolts.length > 3 && (
                             <button onClick={() => setActiveTab('submolts')} className="mt-2 text-sm text-primary hover:underline">
-                              커뮤니티 {data.submolts.length}개 전체 보기 →
+                              View all {data.submolts.length} submolts →
                             </button>
                           )}
                         </CardContent>
                       </Card>
                     )}
-
-                    {/* 게시글 섹션 */}
+                    
+                    {/* Posts section */}
                     {data?.posts && data.posts.length > 0 && (
                       <div className="space-y-4">
                         <h3 className="font-semibold flex items-center gap-2">
-                          <FileText className="h-4 w-4" /> 게시글
+                          <FileText className="h-4 w-4" /> Posts
                         </h3>
                         {data.posts.map(post => (
                           <PostCard key={post.id} post={post} isCompact />
                         ))}
                       </div>
                     )}
-
+                    
                     {totalResults === 0 && <NoResults query={debouncedQuery} />}
                   </TabsPrimitive.Content>
-
+                  
                   <TabsPrimitive.Content value="posts" className="space-y-4">
                     {data?.posts && data.posts.length > 0 ? (
                       data.posts.map(post => <PostCard key={post.id} post={post} />)
                     ) : (
-                      <NoResults query={debouncedQuery} type="게시글" />
+                      <NoResults query={debouncedQuery} type="posts" />
                     )}
                   </TabsPrimitive.Content>
-
+                  
                   <TabsPrimitive.Content value="agents" className="space-y-2">
                     {data?.agents && data.agents.length > 0 ? (
                       <Card>
@@ -165,10 +165,10 @@ export default function SearchPage() {
                         </CardContent>
                       </Card>
                     ) : (
-                      <NoResults query={debouncedQuery} type="에이전트" />
+                      <NoResults query={debouncedQuery} type="agents" />
                     )}
                   </TabsPrimitive.Content>
-
+                  
                   <TabsPrimitive.Content value="submolts" className="space-y-2">
                     {data?.submolts && data.submolts.length > 0 ? (
                       <Card>
@@ -179,7 +179,7 @@ export default function SearchPage() {
                         </CardContent>
                       </Card>
                     ) : (
-                      <NoResults query={debouncedQuery} type="커뮤니티" />
+                      <NoResults query={debouncedQuery} type="submolts" />
                     )}
                   </TabsPrimitive.Content>
                 </>
@@ -189,8 +189,8 @@ export default function SearchPage() {
         ) : (
           <div className="text-center py-12">
             <Search className="h-16 w-16 mx-auto text-muted-foreground/30 mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Moltbook 검색</h2>
-            <p className="text-muted-foreground">2자 이상 입력하여 검색해주세요</p>
+            <h2 className="text-xl font-semibold mb-2">Search moltbook</h2>
+            <p className="text-muted-foreground">Enter at least 2 characters to search</p>
           </div>
         )}
       </div>
@@ -207,7 +207,7 @@ function AgentResult({ agent }: { agent: { id: string; name: string; displayName
       </Avatar>
       <div className="flex-1 min-w-0">
         <p className="font-medium truncate">{agent.displayName || agent.name}</p>
-        <p className="text-sm text-muted-foreground">u/{agent.name} • {formatScore(agent.karma)} 카르마</p>
+        <p className="text-sm text-muted-foreground">u/{agent.name} • {formatScore(agent.karma)} karma</p>
       </div>
     </Link>
   );
@@ -222,7 +222,7 @@ function SubmoltResult({ submolt }: { submolt: { id: string; name: string; displ
       </Avatar>
       <div className="flex-1 min-w-0">
         <p className="font-medium truncate">{submolt.displayName || submolt.name}</p>
-        <p className="text-sm text-muted-foreground">m/{submolt.name} • {formatScore(submolt.subscriberCount)} 멤버</p>
+        <p className="text-sm text-muted-foreground">m/{submolt.name} • {formatScore(submolt.subscriberCount)} members</p>
       </div>
     </Link>
   );
@@ -232,8 +232,8 @@ function NoResults({ query, type }: { query: string; type?: string }) {
   return (
     <Card className="p-8 text-center">
       <Search className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-      <h3 className="font-semibold mb-1">{type || '결과'}을(를) 찾을 수 없습니다</h3>
-      <p className="text-sm text-muted-foreground">"{query}"에 일치하는 {type || '결과'}이(가) 없습니다</p>
+      <h3 className="font-semibold mb-1">No {type || 'results'} found</h3>
+      <p className="text-sm text-muted-foreground">No {type || 'results'} match "{query}"</p>
     </Card>
   );
 }

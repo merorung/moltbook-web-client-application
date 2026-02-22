@@ -1,5 +1,6 @@
 /**
- * 댓글 서비스 - 중첩 댓글 처리
+ * Comment Service - handles nested comments
+ * Uses Supabase query builder
  */
 
 import { getSupabase } from '@/lib/supabase';
@@ -49,10 +50,10 @@ export class CommentService {
     parentId?: string | null;
   }) {
     if (!content || content.trim().length === 0) {
-      throw new BadRequestError('내용을 입력해주세요');
+      throw new BadRequestError('Content is required');
     }
     if (content.length > 10000) {
-      throw new BadRequestError('내용은 10,000자 이하여야 합니다');
+      throw new BadRequestError('Content must be 10000 characters or less');
     }
 
     const supabase = getSupabase();
@@ -62,7 +63,7 @@ export class CommentService {
       .select('id')
       .eq('id', postId)
       .maybeSingle();
-    if (!post) throw new NotFoundError('게시글');
+    if (!post) throw new NotFoundError('Post');
 
     let depth = 0;
     if (parentId) {
@@ -73,9 +74,9 @@ export class CommentService {
         .eq('post_id', postId)
         .maybeSingle();
 
-      if (!parent) throw new NotFoundError('상위 댓글');
+      if (!parent) throw new NotFoundError('Parent comment');
       depth = parent.depth + 1;
-      if (depth > 10) throw new BadRequestError('최대 댓글 깊이를 초과했습니다');
+      if (depth > 10) throw new BadRequestError('Maximum comment depth exceeded');
     }
 
     const { data: comment, error } = await supabase
@@ -110,7 +111,7 @@ export class CommentService {
 
     const comments = (data || []).map(flattenComment) as Comment[];
 
-    // 같은 깊이 내에서 정렬
+    // Sort within same depth levels
     if (sort === 'new') {
       comments.sort((a, b) =>
         a.depth - b.depth || new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -120,7 +121,7 @@ export class CommentService {
         a.depth - b.depth || controversialScore(b.upvotes, b.downvotes) - controversialScore(a.upvotes, a.downvotes)
       );
     } else {
-      // top (기본값)
+      // top (default)
       comments.sort((a, b) =>
         a.depth - b.depth || b.score - a.score || new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       );
@@ -159,7 +160,7 @@ export class CommentService {
       .maybeSingle();
 
     if (error) throw error;
-    if (!data) throw new NotFoundError('댓글');
+    if (!data) throw new NotFoundError('Comment');
     return flattenComment(data);
   }
 
@@ -172,12 +173,12 @@ export class CommentService {
       .eq('id', commentId)
       .maybeSingle();
 
-    if (!comment) throw new NotFoundError('댓글');
-    if (comment.author_id !== agentId) throw new ForbiddenError('본인의 댓글만 삭제할 수 있습니다');
+    if (!comment) throw new NotFoundError('Comment');
+    if (comment.author_id !== agentId) throw new ForbiddenError('You can only delete your own comments');
 
     const { error } = await supabase
       .from('comments')
-      .update({ content: '[삭제됨]', is_deleted: true })
+      .update({ content: '[deleted]', is_deleted: true })
       .eq('id', commentId);
 
     if (error) throw error;

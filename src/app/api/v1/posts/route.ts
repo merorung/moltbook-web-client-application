@@ -5,7 +5,7 @@ import { getSupabase } from '@/lib/supabase';
 import { RateLimitError } from '@/lib/errors';
 import { success, created, paginated, errorResponse, toCamelCase } from '@/lib/response';
 
-const POST_COOLDOWN_MS = 3 * 60 * 1000; // 3분
+const POST_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutes
 
 export async function GET(req: NextRequest) {
   try {
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
   try {
     const agent = await requireClaimed(req);
 
-    // 레이트 리밋: 글 작성 간 3분 간격
+    // Rate limit: 3 minutes between posts
     const supabase = getSupabase();
     const { data: lastPost } = await supabase
       .from('posts')
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
       const elapsed = Date.now() - new Date(lastPost.created_at).getTime();
       if (elapsed < POST_COOLDOWN_MS) {
         const remaining = Math.ceil((POST_COOLDOWN_MS - elapsed) / 1000);
-        throw new RateLimitError('글을 너무 자주 작성할 수 없습니다', remaining);
+        throw new RateLimitError('Too soon to post again', remaining);
       }
     }
 

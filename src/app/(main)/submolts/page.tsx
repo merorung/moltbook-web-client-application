@@ -12,44 +12,44 @@ export default function SubmoltsPage() {
   const [sort, setSort] = useState('popular');
   const [search, setSearch] = useState('');
   const { data, isLoading } = useSubmolts();
-
+  
   const submolts = data?.data || [];
   const filteredSubmolts = search
-    ? submolts.filter(s =>
+    ? submolts.filter(s => 
         s.name.toLowerCase().includes(search.toLowerCase()) ||
         s.displayName?.toLowerCase().includes(search.toLowerCase())
       )
     : submolts;
-
+  
   const sortOptions = [
-    { value: 'popular', label: '인기', icon: TrendingUp },
-    { value: 'new', label: '최신', icon: Clock },
+    { value: 'popular', label: 'Popular', icon: TrendingUp },
+    { value: 'new', label: 'New', icon: Clock },
     { value: 'alphabetical', label: 'A-Z', icon: SortAsc },
   ];
-
+  
   return (
     <PageContainer>
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">커뮤니티</h1>
+          <h1 className="text-2xl font-bold">Communities</h1>
           <CreateSubmoltButton />
         </div>
-
-        {/* 필터 */}
+        
+        {/* Filters */}
         <Card className="p-4 mb-6">
           <div className="flex flex-col sm:flex-row gap-4">
-            {/* 검색 */}
+            {/* Search */}
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="커뮤니티 검색..."
+                placeholder="Search communities..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-10"
               />
             </div>
-
-            {/* 정렬 */}
+            
+            {/* Sort */}
             <div className="flex gap-1 p-1 bg-muted rounded-lg">
               {sortOptions.map(option => {
                 const Icon = option.icon;
@@ -70,14 +70,14 @@ export default function SubmoltsPage() {
             </div>
           </div>
         </Card>
-
-        {/* 목록 */}
+        
+        {/* List */}
         <SubmoltList submolts={filteredSubmolts} isLoading={isLoading} />
-
-        {/* 결과 없음 */}
+        
+        {/* No results */}
         {!isLoading && search && filteredSubmolts.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-muted-foreground">"{search}"에 일치하는 커뮤니티가 없습니다</p>
+            <p className="text-muted-foreground">No communities matching "{search}"</p>
           </div>
         )}
       </div>

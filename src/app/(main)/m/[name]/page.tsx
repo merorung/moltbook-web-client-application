@@ -17,21 +17,21 @@ export default function SubmoltPage() {
   const params = useParams<{ name: string }>();
   const searchParams = useSearchParams();
   const sortParam = (searchParams.get('sort') as PostSort) || 'hot';
-
+  
   const { data: submolt, isLoading: submoltLoading, error } = useSubmolt(params.name);
   const { isAuthenticated } = useAuth();
   const { isSubscribed, addSubscription, removeSubscription } = useSubscriptionStore();
   const { posts, sort, isLoading, hasMore, setSort, setSubmolt, loadMore } = useFeedStore();
   const { ref } = useInfiniteScroll(loadMore, hasMore);
-
+  
   const [subscribing, setSubscribing] = useState(false);
   const subscribed = submolt?.isSubscribed || isSubscribed(params.name);
-
+  
   useEffect(() => {
     setSubmolt(params.name);
     if (sortParam !== sort) setSort(sortParam);
   }, [params.name, sortParam, sort, setSubmolt, setSort]);
-
+  
   const handleSubscribe = async () => {
     if (!isAuthenticated || subscribing) return;
     setSubscribing(true);
@@ -49,19 +49,19 @@ export default function SubmoltPage() {
       setSubscribing(false);
     }
   };
-
+  
   if (error) return notFound();
-
+  
   return (
     <PageContainer>
       <div className="max-w-5xl mx-auto">
-        {/* 배너 */}
+        {/* Banner */}
         <div className="h-32 bg-gradient-to-r from-primary to-moltbook-400 rounded-lg mb-4" />
-
+        
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* 메인 콘텐츠 */}
+          {/* Main content */}
           <div className="flex-1 space-y-4">
-            {/* 커뮤니티 헤더 */}
+            {/* Submolt header */}
             <Card className="p-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-4">
@@ -83,43 +83,43 @@ export default function SubmoltPage() {
                     )}
                   </div>
                 </div>
-
+                
                 {isAuthenticated && (
                   <Button onClick={handleSubscribe} variant={subscribed ? 'secondary' : 'default'} disabled={subscribing}>
-                    {subscribed ? '가입됨' : '가입'}
+                    {subscribed ? 'Joined' : 'Join'}
                   </Button>
                 )}
               </div>
-
+              
               {submolt?.description && (
                 <p className="mt-4 text-sm text-muted-foreground">{submolt.description}</p>
               )}
             </Card>
-
-            {/* 글 작성 */}
+            
+            {/* Create post */}
             {isAuthenticated && <CreatePostCard submolt={params.name} />}
-
-            {/* 정렬 탭 */}
+            
+            {/* Sort tabs */}
             <Card className="p-3">
               <FeedSortTabs value={sort} onChange={(v) => setSort(v as PostSort)} />
             </Card>
-
-            {/* 게시글 */}
+            
+            {/* Posts */}
             <PostList posts={posts} isLoading={isLoading && posts.length === 0} showSubmolt={false} />
-
-            {/* 더 불러오기 */}
+            
+            {/* Load more */}
             {hasMore && (
               <div ref={ref} className="flex justify-center py-8">
                 {isLoading && <Spinner />}
               </div>
             )}
           </div>
-
-          {/* 사이드바 */}
+          
+          {/* Sidebar */}
           <div className="w-full lg:w-80 space-y-4">
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-base">커뮤니티 소개</CardTitle>
+                <CardTitle className="text-base">About Community</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {submoltLoading ? (
@@ -129,26 +129,26 @@ export default function SubmoltPage() {
                   </>
                 ) : (
                   <>
-                    <p className="text-sm">{submolt?.description || '이 커뮤니티에 오신 것을 환영합니다!'}</p>
-
+                    <p className="text-sm">{submolt?.description || 'Welcome to this community!'}</p>
+                    
                     <div className="flex items-center gap-4 text-sm">
                       <div className="flex items-center gap-1">
                         <Users className="h-4 w-4 text-muted-foreground" />
                         <span className="font-medium">{formatScore(submolt?.subscriberCount || 0)}</span>
-                        <span className="text-muted-foreground">멤버</span>
+                        <span className="text-muted-foreground">members</span>
                       </div>
                     </div>
-
+                    
                     <div className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Calendar className="h-3.5 w-3.5" />
-                      개설일 {submolt?.createdAt ? formatDate(submolt.createdAt) : '최근'}
+                      Created {submolt?.createdAt ? formatDate(submolt.createdAt) : 'recently'}
                     </div>
-
+                    
                     {isAuthenticated && (
                       <Link href={`/m/${params.name}/submit`}>
                         <Button className="w-full gap-2">
                           <Plus className="h-4 w-4" />
-                          글 작성
+                          Create Post
                         </Button>
                       </Link>
                     )}
@@ -156,12 +156,12 @@ export default function SubmoltPage() {
                 )}
               </CardContent>
             </Card>
-
-            {/* 규칙 */}
+            
+            {/* Rules */}
             {submolt?.rules && submolt.rules.length > 0 && (
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-base">규칙</CardTitle>
+                  <CardTitle className="text-base">Rules</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ol className="space-y-2">
@@ -177,12 +177,12 @@ export default function SubmoltPage() {
                 </CardContent>
               </Card>
             )}
-
-            {/* 관리자 */}
+            
+            {/* Moderators */}
             {submolt?.moderators && submolt.moderators.length > 0 && (
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-base">관리자</CardTitle>
+                  <CardTitle className="text-base">Moderators</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
