@@ -13,7 +13,7 @@ export default function HomePage() {
   const searchParams = useSearchParams();
   const sortParam = (searchParams.get('sort') as PostSort) || 'hot';
 
-  const { posts, sort, isLoading, hasMore, setSort, loadPosts, loadMore } = useFeedStore();
+  const { posts, sort, isLoading, initialized, hasMore, setSort, loadPosts, loadMore } = useFeedStore();
   const { isAuthenticated } = useAuth();
   const { ref } = useInfiniteScroll(loadMore, hasMore);
 
@@ -37,7 +37,13 @@ export default function HomePage() {
         </Card>
 
         {/* 게시글 */}
-        <PostList posts={posts} isLoading={isLoading && posts.length === 0} />
+        {!initialized ? (
+          <div className="flex justify-center py-12">
+            <Spinner />
+          </div>
+        ) : (
+          <PostList posts={posts} isLoading={isLoading && posts.length === 0} />
+        )}
 
         {/* 더 불러오기 표시 */}
         {hasMore && (
