@@ -17,16 +17,16 @@ export function SearchModal() {
   const debouncedQuery = useDebounce(query, 200);
   const { data, isLoading } = useSearch(debouncedQuery);
   const inputRef = React.useRef<HTMLInputElement>(null);
-
-  // localStorage에서 최근 검색어 불러오기
+  
+  // Load recent searches from localStorage
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('moltbook_recent_searches');
       if (saved) setRecentSearches(JSON.parse(saved));
     }
   }, []);
-
-  // 모달 열릴 때 입력 필드에 포커스
+  
+  // Focus input when modal opens
   React.useEffect(() => {
     if (searchOpen) {
       setTimeout(() => inputRef.current?.focus(), 100);
@@ -34,10 +34,10 @@ export function SearchModal() {
       setQuery('');
     }
   }, [searchOpen]);
-
-  // ESC로 닫기
+  
+  // Close on escape
   useKeyboardShortcut('Escape', closeSearch);
-
+  
   const saveSearch = (term: string) => {
     const updated = [term, ...recentSearches.filter(s => s !== term)].slice(0, 5);
     setRecentSearches(updated);
@@ -45,7 +45,7 @@ export function SearchModal() {
       localStorage.setItem('moltbook_recent_searches', JSON.stringify(updated));
     }
   };
-
+  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
@@ -54,32 +54,32 @@ export function SearchModal() {
       closeSearch();
     }
   };
-
+  
   const handleResultClick = (term?: string) => {
     if (term) saveSearch(term);
     closeSearch();
   };
-
+  
   const clearRecent = () => {
     setRecentSearches([]);
     if (typeof window !== 'undefined') {
       localStorage.removeItem('moltbook_recent_searches');
     }
   };
-
+  
   const hasResults = data && (data.posts?.length || data.agents?.length || data.submolts?.length);
-
+  
   return (
     <Dialog open={searchOpen} onOpenChange={(open) => !open && closeSearch()}>
       <DialogContent className="sm:max-w-xl p-0 gap-0 overflow-hidden">
-        {/* 검색 입력 */}
+        {/* Search input */}
         <form onSubmit={handleSubmit} className="border-b">
           <div className="flex items-center px-4">
             <Search className="h-5 w-5 text-muted-foreground shrink-0" />
             <input
               ref={inputRef}
               type="text"
-              placeholder="Moltbook 검색..."
+              placeholder="Search moltbook..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="flex-1 h-14 px-3 bg-transparent text-lg focus:outline-none"
@@ -91,8 +91,8 @@ export function SearchModal() {
             )}
           </div>
         </form>
-
-        {/* 결과 */}
+        
+        {/* Results */}
         <div className="max-h-[60vh] overflow-y-auto">
           {isLoading ? (
             <div className="p-4 space-y-3">
@@ -106,10 +106,10 @@ export function SearchModal() {
           ) : debouncedQuery.length >= 2 ? (
             hasResults ? (
               <div className="py-2">
-                {/* 에이전트 */}
+                {/* Agents */}
                 {data.agents && data.agents.length > 0 && (
                   <div className="mb-2">
-                    <div className="px-4 py-1 text-xs font-semibold text-muted-foreground uppercase">에이전트</div>
+                    <div className="px-4 py-1 text-xs font-semibold text-muted-foreground uppercase">Agents</div>
                     {data.agents.slice(0, 3).map(agent => (
                       <Link
                         key={agent.id}
@@ -122,18 +122,18 @@ export function SearchModal() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-medium truncate">{agent.displayName || agent.name}</p>
-                          <p className="text-xs text-muted-foreground">u/{agent.name} • {formatScore(agent.karma)} 카르마</p>
+                          <p className="text-xs text-muted-foreground">u/{agent.name} • {formatScore(agent.karma)} karma</p>
                         </div>
                         <Users className="h-4 w-4 text-muted-foreground" />
                       </Link>
                     ))}
                   </div>
                 )}
-
-                {/* 커뮤니티 */}
+                
+                {/* Submolts */}
                 {data.submolts && data.submolts.length > 0 && (
                   <div className="mb-2">
-                    <div className="px-4 py-1 text-xs font-semibold text-muted-foreground uppercase">커뮤니티</div>
+                    <div className="px-4 py-1 text-xs font-semibold text-muted-foreground uppercase">Communities</div>
                     {data.submolts.slice(0, 3).map(submolt => (
                       <Link
                         key={submolt.id}
@@ -146,18 +146,18 @@ export function SearchModal() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-medium truncate">{submolt.displayName || submolt.name}</p>
-                          <p className="text-xs text-muted-foreground">m/{submolt.name} • {formatScore(submolt.subscriberCount)} 멤버</p>
+                          <p className="text-xs text-muted-foreground">m/{submolt.name} • {formatScore(submolt.subscriberCount)} members</p>
                         </div>
                         <Hash className="h-4 w-4 text-muted-foreground" />
                       </Link>
                     ))}
                   </div>
                 )}
-
-                {/* 게시글 */}
+                
+                {/* Posts */}
                 {data.posts && data.posts.length > 0 && (
                   <div className="mb-2">
-                    <div className="px-4 py-1 text-xs font-semibold text-muted-foreground uppercase">게시글</div>
+                    <div className="px-4 py-1 text-xs font-semibold text-muted-foreground uppercase">Posts</div>
                     {data.posts.slice(0, 5).map(post => (
                       <Link
                         key={post.id}
@@ -170,35 +170,35 @@ export function SearchModal() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-medium truncate">{post.title}</p>
-                          <p className="text-xs text-muted-foreground">m/{post.submolt} • {formatScore(post.score)} 포인트</p>
+                          <p className="text-xs text-muted-foreground">m/{post.submolt} • {formatScore(post.score)} points</p>
                         </div>
                         <ArrowRight className="h-4 w-4 text-muted-foreground" />
                       </Link>
                     ))}
                   </div>
                 )}
-
-                {/* 전체 결과 보기 */}
+                
+                {/* View all */}
                 <Link
                   href={`/search?q=${encodeURIComponent(debouncedQuery)}`}
                   onClick={() => handleResultClick(debouncedQuery)}
                   className="flex items-center justify-center gap-2 px-4 py-3 text-sm text-primary hover:bg-muted transition-colors border-t"
                 >
-                  전체 결과 보기
+                  View all results
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
             ) : (
               <div className="p-8 text-center">
                 <Search className="h-12 w-12 mx-auto text-muted-foreground/30 mb-3" />
-                <p className="text-muted-foreground">검색 결과 없음: "{debouncedQuery}"</p>
+                <p className="text-muted-foreground">No results for "{debouncedQuery}"</p>
               </div>
             )
           ) : recentSearches.length > 0 ? (
             <div className="py-2">
               <div className="px-4 py-1 flex items-center justify-between">
-                <span className="text-xs font-semibold text-muted-foreground uppercase">최근 검색</span>
-                <button onClick={clearRecent} className="text-xs text-muted-foreground hover:text-foreground">지우기</button>
+                <span className="text-xs font-semibold text-muted-foreground uppercase">Recent Searches</span>
+                <button onClick={clearRecent} className="text-xs text-muted-foreground hover:text-foreground">Clear</button>
               </div>
               {recentSearches.map((term, i) => (
                 <button
@@ -214,19 +214,19 @@ export function SearchModal() {
           ) : (
             <div className="p-8 text-center">
               <Search className="h-12 w-12 mx-auto text-muted-foreground/30 mb-3" />
-              <p className="text-muted-foreground">검색어를 입력하세요</p>
+              <p className="text-muted-foreground">Start typing to search</p>
             </div>
           )}
         </div>
-
-        {/* 푸터 */}
+        
+        {/* Footer */}
         <div className="border-t px-4 py-2 flex items-center justify-between text-xs text-muted-foreground">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 bg-muted rounded">↵</kbd> 검색
+              <kbd className="px-1.5 py-0.5 bg-muted rounded">↵</kbd> to search
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 bg-muted rounded">esc</kbd> 닫기
+              <kbd className="px-1.5 py-0.5 bg-muted rounded">esc</kbd> to close
             </span>
           </div>
         </div>

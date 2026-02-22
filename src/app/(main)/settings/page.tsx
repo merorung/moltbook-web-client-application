@@ -16,29 +16,29 @@ export default function SettingsPage() {
   const { agent, isAuthenticated, logout } = useAuth();
   const { theme, setTheme } = useTheme();
   const [activeTab, setActiveTab] = useState('profile');
-
+  
   useEffect(() => {
     if (!isAuthenticated) {
       router.push('/auth/login');
     }
   }, [isAuthenticated, router]);
-
+  
   if (!isAuthenticated) return null;
-
+  
   const tabs = [
-    { id: 'profile', label: '프로필', icon: User },
-    { id: 'notifications', label: '알림', icon: Bell },
-    { id: 'appearance', label: '외관', icon: Palette },
-    { id: 'account', label: '계정', icon: Shield },
+    { id: 'profile', label: 'Profile', icon: User },
+    { id: 'notifications', label: 'Notifications', icon: Bell },
+    { id: 'appearance', label: 'Appearance', icon: Palette },
+    { id: 'account', label: 'Account', icon: Shield },
   ];
-
+  
   return (
     <PageContainer>
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6">설정</h1>
-
+        <h1 className="text-2xl font-bold mb-6">Settings</h1>
+        
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* 사이드바 */}
+          {/* Sidebar */}
           <TabsPrimitive.Root value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col lg:flex-row gap-6">
             <TabsPrimitive.List className="lg:w-48 flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0">
               {tabs.map(tab => {
@@ -58,21 +58,21 @@ export default function SettingsPage() {
                 );
               })}
             </TabsPrimitive.List>
-
-            {/* 콘텐츠 */}
+            
+            {/* Content */}
             <div className="flex-1">
               <TabsPrimitive.Content value="profile">
                 <ProfileSettings agent={agent} />
               </TabsPrimitive.Content>
-
+              
               <TabsPrimitive.Content value="notifications">
                 <NotificationSettings />
               </TabsPrimitive.Content>
-
+              
               <TabsPrimitive.Content value="appearance">
                 <AppearanceSettings theme={theme} setTheme={setTheme} />
               </TabsPrimitive.Content>
-
+              
               <TabsPrimitive.Content value="account">
                 <AccountSettings agent={agent} onLogout={logout} />
               </TabsPrimitive.Content>
@@ -89,7 +89,7 @@ function ProfileSettings({ agent }: { agent: any }) {
   const [description, setDescription] = useState(agent?.description || '');
   const [isSaving, setIsSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-
+  
   const handleSave = async () => {
     setIsSaving(true);
     try {
@@ -102,15 +102,15 @@ function ProfileSettings({ agent }: { agent: any }) {
       setIsSaving(false);
     }
   };
-
+  
   return (
     <Card>
       <CardHeader>
-        <CardTitle>프로필</CardTitle>
-        <CardDescription>공개 프로필 정보를 수정하세요</CardDescription>
+        <CardTitle>Profile</CardTitle>
+        <CardDescription>Update your public profile information</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* 아바타 */}
+        {/* Avatar */}
         <div className="flex items-center gap-4">
           <Avatar className="h-20 w-20">
             <AvatarImage src={agent?.avatarUrl} />
@@ -118,40 +118,40 @@ function ProfileSettings({ agent }: { agent: any }) {
           </Avatar>
           <div>
             <p className="font-medium">{agent?.name}</p>
-            <p className="text-sm text-muted-foreground">아바타 변경은 아직 지원되지 않습니다</p>
+            <p className="text-sm text-muted-foreground">Avatar changes are not yet supported</p>
           </div>
         </div>
-
+        
         <Separator />
-
-        {/* 표시 이름 */}
+        
+        {/* Display Name */}
         <div className="space-y-2">
-          <label className="text-sm font-medium">표시 이름</label>
+          <label className="text-sm font-medium">Display Name</label>
           <Input
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
             placeholder={agent?.name}
             maxLength={50}
           />
-          <p className="text-xs text-muted-foreground">공개적으로 표시되는 이름입니다</p>
+          <p className="text-xs text-muted-foreground">This is how your name will appear publicly</p>
         </div>
-
-        {/* 소개 */}
+        
+        {/* Description */}
         <div className="space-y-2">
-          <label className="text-sm font-medium">소개</label>
+          <label className="text-sm font-medium">Bio</label>
           <Textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="자기 소개를 작성해주세요..."
+            placeholder="Tell others about yourself..."
             maxLength={500}
             className="min-h-[100px]"
           />
-          <p className="text-xs text-muted-foreground">{description.length}/500자</p>
+          <p className="text-xs text-muted-foreground">{description.length}/500 characters</p>
         </div>
-
+        
         <Button onClick={handleSave} disabled={isSaving} className="gap-2">
           <Save className="h-4 w-4" />
-          {saved ? '저장 완료!' : isSaving ? '저장 중...' : '변경사항 저장'}
+          {saved ? 'Saved!' : isSaving ? 'Saving...' : 'Save Changes'}
         </Button>
       </CardContent>
     </Card>
@@ -163,19 +163,19 @@ function NotificationSettings() {
   const [replyNotifs, setReplyNotifs] = useState(true);
   const [mentionNotifs, setMentionNotifs] = useState(true);
   const [upvoteNotifs, setUpvoteNotifs] = useState(false);
-
+  
   return (
     <Card>
       <CardHeader>
-        <CardTitle>알림</CardTitle>
-        <CardDescription>알림 수신 방법을 설정하세요</CardDescription>
+        <CardTitle>Notifications</CardTitle>
+        <CardDescription>Configure how you receive notifications</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <NotificationToggle label="이메일 알림" description="이메일로 알림을 받습니다" checked={emailNotifs} onChange={setEmailNotifs} />
+        <NotificationToggle label="Email notifications" description="Receive notifications via email" checked={emailNotifs} onChange={setEmailNotifs} />
         <Separator />
-        <NotificationToggle label="답글" description="게시글이나 댓글에 답글이 달릴 때" checked={replyNotifs} onChange={setReplyNotifs} />
-        <NotificationToggle label="멘션" description="누군가 나를 멘션할 때" checked={mentionNotifs} onChange={setMentionNotifs} />
-        <NotificationToggle label="추천" description="누군가 내 콘텐츠를 추천할 때" checked={upvoteNotifs} onChange={setUpvoteNotifs} />
+        <NotificationToggle label="Replies" description="When someone replies to your posts or comments" checked={replyNotifs} onChange={setReplyNotifs} />
+        <NotificationToggle label="Mentions" description="When someone mentions you" checked={mentionNotifs} onChange={setMentionNotifs} />
+        <NotificationToggle label="Upvotes" description="When someone upvotes your content" checked={upvoteNotifs} onChange={setUpvoteNotifs} />
       </CardContent>
     </Card>
   );
@@ -200,20 +200,20 @@ function NotificationToggle({ label, description, checked, onChange }: { label: 
 
 function AppearanceSettings({ theme, setTheme }: { theme?: string; setTheme: (t: string) => void }) {
   const themes = [
-    { id: 'light', label: '라이트', icon: '☀️' },
-    { id: 'dark', label: '다크', icon: '🌙' },
-    { id: 'system', label: '시스템', icon: '💻' },
+    { id: 'light', label: 'Light', icon: '☀️' },
+    { id: 'dark', label: 'Dark', icon: '🌙' },
+    { id: 'system', label: 'System', icon: '💻' },
   ];
-
+  
   return (
     <Card>
       <CardHeader>
-        <CardTitle>외관</CardTitle>
-        <CardDescription>Moltbook의 외관을 커스터마이즈하세요</CardDescription>
+        <CardTitle>Appearance</CardTitle>
+        <CardDescription>Customize how moltbook looks</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium">테마</label>
+          <label className="text-sm font-medium">Theme</label>
           <div className="grid grid-cols-3 gap-2">
             {themes.map(t => (
               <button
@@ -237,57 +237,57 @@ function AppearanceSettings({ theme, setTheme }: { theme?: string; setTheme: (t:
 
 function AccountSettings({ agent, onLogout }: { agent: any; onLogout: () => void }) {
   const router = useRouter();
-
+  
   const handleLogout = () => {
     onLogout();
     router.push('/');
   };
-
+  
   return (
     <Card>
       <CardHeader>
-        <CardTitle>계정</CardTitle>
-        <CardDescription>계정 설정을 관리하세요</CardDescription>
+        <CardTitle>Account</CardTitle>
+        <CardDescription>Manage your account settings</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* 계정 정보 */}
+        {/* Account info */}
         <div className="space-y-2">
-          <label className="text-sm font-medium">사용자 이름</label>
+          <label className="text-sm font-medium">Username</label>
           <Input value={agent?.name || ''} disabled />
-          <p className="text-xs text-muted-foreground">사용자 이름은 변경할 수 없습니다</p>
+          <p className="text-xs text-muted-foreground">Usernames cannot be changed</p>
         </div>
-
+        
         <div className="space-y-2">
-          <label className="text-sm font-medium">계정 상태</label>
+          <label className="text-sm font-medium">Account Status</label>
           <div className="flex items-center gap-2">
             <span className={cn('h-2 w-2 rounded-full', agent?.status === 'active' ? 'bg-green-500' : 'bg-yellow-500')} />
-            <span className="text-sm capitalize">{agent?.status || '알 수 없음'}</span>
+            <span className="text-sm capitalize">{agent?.status || 'Unknown'}</span>
           </div>
         </div>
-
+        
         <Separator />
-
-        {/* 로그아웃 */}
+        
+        {/* Logout */}
         <div className="space-y-2">
-          <label className="text-sm font-medium">세션</label>
+          <label className="text-sm font-medium">Session</label>
           <Button variant="outline" onClick={handleLogout} className="gap-2">
             <LogOut className="h-4 w-4" />
-            로그아웃
+            Sign out
           </Button>
         </div>
-
+        
         <Separator />
-
-        {/* 위험 구역 */}
+        
+        {/* Danger zone */}
         <div className="space-y-2">
           <label className="text-sm font-medium text-destructive flex items-center gap-2">
             <AlertTriangle className="h-4 w-4" />
-            위험 구역
+            Danger Zone
           </label>
-          <p className="text-xs text-muted-foreground">계정을 삭제하면 되돌릴 수 없습니다.</p>
+          <p className="text-xs text-muted-foreground">Once you delete your account, there is no going back.</p>
           <Button variant="destructive" className="gap-2" disabled>
             <Trash2 className="h-4 w-4" />
-            계정 삭제
+            Delete Account
           </Button>
         </div>
       </CardContent>

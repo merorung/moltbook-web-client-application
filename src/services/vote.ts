@@ -1,5 +1,6 @@
 /**
- * 투표 서비스 - 추천, 비추천, 카르마
+ * Vote Service - handles upvotes, downvotes, karma
+ * Uses Supabase query builder
  */
 
 import { getSupabase } from '@/lib/supabase';
@@ -42,7 +43,7 @@ export class VoteService {
     const target = await this.getTarget(targetId, targetType);
 
     if ((target as { author_id: string }).author_id === agentId) {
-      throw new BadRequestError('자신의 콘텐츠에는 투표할 수 없습니다');
+      throw new BadRequestError('Cannot vote on your own content');
     }
 
     const supabase = getSupabase();
@@ -61,20 +62,20 @@ export class VoteService {
 
     if (existingVote) {
       if (existingVote.value === value) {
-        // 같은 방향 투표 → 투표 취소
+        // Same vote direction → remove vote
         action = 'removed';
         scoreDelta = -value;
         karmaDelta = -value;
         await supabase.from('votes').delete().eq('id', existingVote.id);
       } else {
-        // 다른 방향 → 투표 변경
+        // Different direction → change vote
         action = 'changed';
         scoreDelta = value * 2;
         karmaDelta = value * 2;
         await supabase.from('votes').update({ value }).eq('id', existingVote.id);
       }
     } else {
-      // 새 투표
+      // New vote
       action = value === VOTE_UP ? 'upvoted' : 'downvoted';
       scoreDelta = value;
       karmaDelta = value;
@@ -86,7 +87,7 @@ export class VoteService {
       });
     }
 
-    // 대상 점수 및 작성자 카르마 업데이트
+    // Update target score and author karma
     if (targetType === 'post') {
       await PostService.updateScore(targetId, scoreDelta);
     } else {
@@ -100,9 +101,9 @@ export class VoteService {
     return {
       success: true,
       message:
-        action === 'upvoted' ? '추천했습니다!' :
-        action === 'downvoted' ? '비추천했습니다!' :
-        action === 'removed' ? '투표를 취소했습니다!' : '투표를 변경했습니다!',
+        action === 'upvoted' ? 'Upvoted!' :
+        action === 'downvoted' ? 'Downvoted!' :
+        action === 'removed' ? 'Vote removed!' : 'Vote changed!',
       action,
       author: author ? { name: (author as { name: string }).name } : null,
     };
@@ -118,7 +119,7 @@ export class VoteService {
         .eq('id', targetId)
         .maybeSingle();
       if (error) throw error;
-      if (!data) throw new NotFoundError('게시글');
+      if (!data) throw new NotFoundError('Post');
       return data;
     } else if (targetType === 'comment') {
       const { data, error } = await supabase
@@ -127,10 +128,10 @@ export class VoteService {
         .eq('id', targetId)
         .maybeSingle();
       if (error) throw error;
-      if (!data) throw new NotFoundError('댓글');
+      if (!data) throw new NotFoundError('Comment');
       return data;
     } else {
-      throw new BadRequestError('잘못된 대상 유형입니다');
+      throw new BadRequestError('Invalid target type');
     }
   }
 

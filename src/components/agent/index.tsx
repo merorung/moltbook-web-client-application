@@ -19,14 +19,14 @@ export function AgentCard({ agent, variant = 'default', showFollowButton = true 
   const { agent: currentAgent, isAuthenticated } = useAuth();
   const [isFollowing, setIsFollowing] = React.useState(agent.isFollowing || false);
   const [isLoading, setIsLoading] = React.useState(false);
-
+  
   const isOwnProfile = currentAgent?.name === agent.name;
-
+  
   const handleFollow = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (!isAuthenticated || isLoading || isOwnProfile) return;
-
+    
     setIsLoading(true);
     try {
       if (isFollowing) {
@@ -37,12 +37,12 @@ export function AgentCard({ agent, variant = 'default', showFollowButton = true 
         setIsFollowing(true);
       }
     } catch (err) {
-      console.error('팔로우 실패:', err);
+      console.error('Follow failed:', err);
     } finally {
       setIsLoading(false);
     }
   };
-
+  
   if (variant === 'compact') {
     return (
       <Link href={getAgentUrl(agent.name)} className="flex items-center gap-3 p-2 rounded-md hover:bg-muted transition-colors">
@@ -52,7 +52,7 @@ export function AgentCard({ agent, variant = 'default', showFollowButton = true 
         </Avatar>
         <div className="flex-1 min-w-0">
           <p className="font-medium text-sm truncate">{agent.displayName || agent.name}</p>
-          <p className="text-xs text-muted-foreground">{formatScore(agent.karma)} 카르마</p>
+          <p className="text-xs text-muted-foreground">{formatScore(agent.karma)} karma</p>
         </div>
         {showFollowButton && isAuthenticated && !isOwnProfile && (
           <Button size="sm" variant={isFollowing ? 'secondary' : 'default'} onClick={handleFollow} disabled={isLoading} className="h-7 px-2">
@@ -62,7 +62,7 @@ export function AgentCard({ agent, variant = 'default', showFollowButton = true 
       </Link>
     );
   }
-
+  
   return (
     <Card className="p-4 hover:border-muted-foreground/20 transition-colors">
       <Link href={getAgentUrl(agent.name)} className="block">
@@ -71,12 +71,12 @@ export function AgentCard({ agent, variant = 'default', showFollowButton = true 
             <AvatarImage src={agent.avatarUrl} />
             <AvatarFallback>{getInitials(agent.name)}</AvatarFallback>
           </Avatar>
-
+          
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <h3 className="font-semibold truncate">{agent.displayName || agent.name}</h3>
               {agent.status === 'active' && (
-                <Badge variant="secondary" className="text-xs">인증됨</Badge>
+                <Badge variant="secondary" className="text-xs">Verified</Badge>
               )}
             </div>
             <p className="text-sm text-muted-foreground">u/{agent.name}</p>
@@ -86,18 +86,18 @@ export function AgentCard({ agent, variant = 'default', showFollowButton = true 
             <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
               <span className="flex items-center gap-1">
                 <Award className="h-3 w-3" />
-                <span className={cn(agent.karma > 0 && 'text-upvote')}>{formatScore(agent.karma)}</span> 카르마
+                <span className={cn(agent.karma > 0 && 'text-upvote')}>{formatScore(agent.karma)}</span> karma
               </span>
               <span className="flex items-center gap-1">
                 <Users className="h-3 w-3" />
-                {formatScore(agent.followerCount)} 팔로워
+                {formatScore(agent.followerCount)} followers
               </span>
             </div>
           </div>
-
+          
           {showFollowButton && isAuthenticated && !isOwnProfile && (
             <Button size="sm" variant={isFollowing ? 'secondary' : 'default'} onClick={handleFollow} disabled={isLoading}>
-              {isFollowing ? '팔로잉' : '팔로우'}
+              {isFollowing ? 'Following' : 'Follow'}
             </Button>
           )}
         </div>
@@ -106,7 +106,7 @@ export function AgentCard({ agent, variant = 'default', showFollowButton = true 
   );
 }
 
-// 에이전트 목록
+// Agent List
 export function AgentList({ agents, isLoading, variant = 'default', showFollowButton = true }: { agents: Agent[]; isLoading?: boolean; variant?: 'default' | 'compact'; showFollowButton?: boolean }) {
   if (isLoading) {
     return (
@@ -117,16 +117,16 @@ export function AgentList({ agents, isLoading, variant = 'default', showFollowBu
       </div>
     );
   }
-
+  
   if (agents.length === 0) {
     return (
       <div className="text-center py-8">
         <Users className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-        <p className="text-muted-foreground">에이전트를 찾을 수 없습니다</p>
+        <p className="text-muted-foreground">No agents found</p>
       </div>
     );
   }
-
+  
   return (
     <div className={cn('space-y-4', variant === 'compact' && 'space-y-1')}>
       {agents.map(agent => (
@@ -136,7 +136,7 @@ export function AgentList({ agents, isLoading, variant = 'default', showFollowBu
   );
 }
 
-// 에이전트 카드 스켈레톤
+// Agent Card Skeleton
 export function AgentCardSkeleton({ variant = 'default' }: { variant?: 'default' | 'compact' }) {
   if (variant === 'compact') {
     return (
@@ -150,7 +150,7 @@ export function AgentCardSkeleton({ variant = 'default' }: { variant?: 'default'
       </div>
     );
   }
-
+  
   return (
     <Card className="p-4">
       <div className="flex items-start gap-4">
@@ -170,7 +170,7 @@ export function AgentCardSkeleton({ variant = 'default' }: { variant?: 'default'
   );
 }
 
-// 에이전트 미니 카드 (목록에서 사용)
+// Agent Mini Card (for showing in lists)
 export function AgentMiniCard({ agent }: { agent: Pick<Agent, 'name' | 'displayName' | 'avatarUrl' | 'karma'> }) {
   return (
     <Link href={getAgentUrl(agent.name)} className="flex items-center gap-2 p-1.5 rounded hover:bg-muted transition-colors">
@@ -186,14 +186,14 @@ export function AgentMiniCard({ agent }: { agent: Pick<Agent, 'name' | 'displayN
   );
 }
 
-// 링크가 있는 에이전트 아바타
+// Agent Avatar with Link
 export function AgentAvatar({ agent, size = 'default' }: { agent: Pick<Agent, 'name' | 'avatarUrl'>; size?: 'sm' | 'default' | 'lg' }) {
   const sizeClasses = {
     sm: 'h-6 w-6',
     default: 'h-8 w-8',
     lg: 'h-12 w-12',
   };
-
+  
   return (
     <Link href={getAgentUrl(agent.name)}>
       <Avatar className={cn(sizeClasses[size], 'hover:ring-2 ring-primary transition-all')}>
@@ -206,8 +206,8 @@ export function AgentAvatar({ agent, size = 'default' }: { agent: Pick<Agent, 'n
   );
 }
 
-// 리더보드
-export function AgentLeaderboard({ agents, title = '톱 에이전트' }: { agents: Agent[]; title?: string }) {
+// Leaderboard
+export function AgentLeaderboard({ agents, title = 'Top Agents' }: { agents: Agent[]; title?: string }) {
   return (
     <Card>
       <div className="p-4 border-b">

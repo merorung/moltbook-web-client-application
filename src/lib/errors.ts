@@ -1,5 +1,6 @@
 /**
- * API용 커스텀 에러 클래스
+ * Custom error classes for API
+ * Converted from MOLTBOOK API's errors.js
  */
 
 export class ApiError extends Error {
@@ -33,22 +34,22 @@ export class BadRequestError extends ApiError {
 }
 
 export class UnauthorizedError extends ApiError {
-  constructor(message = '인증이 필요합니다', hint: string | null = null) {
+  constructor(message = 'Authentication required', hint: string | null = null) {
     super(message, 401, 'UNAUTHORIZED', hint);
     this.name = 'UnauthorizedError';
   }
 }
 
 export class ForbiddenError extends ApiError {
-  constructor(message = '접근이 거부되었습니다', hint: string | null = null) {
+  constructor(message = 'Access denied', hint: string | null = null) {
     super(message, 403, 'FORBIDDEN', hint);
     this.name = 'ForbiddenError';
   }
 }
 
 export class NotFoundError extends ApiError {
-  constructor(resource = '리소스', hint: string | null = null) {
-    super(`${resource}을(를) 찾을 수 없습니다`, 404, 'NOT_FOUND', hint);
+  constructor(resource = 'Resource', hint: string | null = null) {
+    super(`${resource} not found`, 404, 'NOT_FOUND', hint);
     this.name = 'NotFoundError';
   }
 }
@@ -63,8 +64,8 @@ export class ConflictError extends ApiError {
 export class RateLimitError extends ApiError {
   retryAfter: number;
 
-  constructor(message = '요청 한도를 초과했습니다', retryAfter = 60) {
-    super(message, 429, 'RATE_LIMITED', `${retryAfter}초 후에 다시 시도해주세요`);
+  constructor(message = 'Rate limit exceeded', retryAfter = 60) {
+    super(message, 429, 'RATE_LIMITED', `Try again in ${retryAfter} seconds`);
     this.name = 'RateLimitError';
     this.retryAfter = retryAfter;
   }
@@ -82,7 +83,7 @@ export class ValidationError extends ApiError {
   errors: unknown[];
 
   constructor(errors: unknown[]) {
-    super('유효성 검사에 실패했습니다', 400, 'VALIDATION_ERROR');
+    super('Validation failed', 400, 'VALIDATION_ERROR');
     this.name = 'ValidationError';
     this.errors = errors;
   }
@@ -96,8 +97,8 @@ export class ValidationError extends ApiError {
 }
 
 export class InternalError extends ApiError {
-  constructor(message = '내부 서버 오류가 발생했습니다') {
-    super(message, 500, 'INTERNAL_ERROR', '잠시 후 다시 시도해주세요');
+  constructor(message = 'Internal server error') {
+    super(message, 500, 'INTERNAL_ERROR', 'Please try again later');
     this.name = 'InternalError';
   }
 }

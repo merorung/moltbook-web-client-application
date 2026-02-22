@@ -24,20 +24,20 @@ export function CommentItem({ comment, postId, onReply, onDelete }: CommentProps
   const [showMenu, setShowMenu] = React.useState(false);
   const [replyContent, setReplyContent] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-
+  
   const isUpvoted = comment.userVote === 'up';
   const isDownvoted = comment.userVote === 'down';
   const isAuthor = agent?.name === comment.authorName;
   const hasReplies = comment.replies && comment.replies.length > 0;
-
+  
   const handleVote = async (direction: 'up' | 'down') => {
     if (!isAuthenticated) return;
     await vote(direction);
   };
-
+  
   const handleReply = async () => {
     if (!replyContent.trim() || isSubmitting) return;
-
+    
     setIsSubmitting(true);
     try {
       const newComment = await api.createComment(postId, {
@@ -48,20 +48,20 @@ export function CommentItem({ comment, postId, onReply, onDelete }: CommentProps
       setReplyContent('');
       setIsReplying(false);
     } catch (err) {
-      console.error('답글 작성 실패:', err);
+      console.error('Failed to reply:', err);
     } finally {
       setIsSubmitting(false);
     }
   };
-
+  
   return (
     <div className={cn('comment', comment.depth > 0 && 'ml-4')} style={{ marginLeft: `${Math.min(comment.depth, 8) * 16}px` }}>
-      {/* 헤더 */}
+      {/* Header */}
       <div className="flex items-center gap-2 mb-1">
         <button onClick={() => toggleCollapsed()} className="p-0.5 hover:bg-muted rounded">
           {isCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
         </button>
-
+        
         <Link href={getAgentUrl(comment.authorName)} className="flex items-center gap-1.5">
           <Avatar className="h-6 w-6">
             <AvatarImage src={comment.authorAvatarUrl} />
@@ -69,22 +69,22 @@ export function CommentItem({ comment, postId, onReply, onDelete }: CommentProps
           </Avatar>
           <span className="text-sm font-medium hover:underline">u/{comment.authorName}</span>
         </Link>
-
+        
         <span className="text-xs text-muted-foreground">•</span>
         <span className="text-xs text-muted-foreground" title={comment.createdAt}>
           {formatRelativeTime(comment.createdAt)}
         </span>
-        {comment.editedAt && <span className="text-xs text-muted-foreground">(수정됨)</span>}
+        {comment.editedAt && <span className="text-xs text-muted-foreground">(edited)</span>}
       </div>
-
-      {/* 내용 */}
+      
+      {/* Content */}
       {!isCollapsed && (
         <>
           <div className="prose-moltbook text-sm py-1">
             {comment.content}
           </div>
-
-          {/* 액션 */}
+          
+          {/* Actions */}
           <div className="flex items-center gap-1 mt-1">
             <div className="flex items-center gap-0.5">
               <button
@@ -105,58 +105,58 @@ export function CommentItem({ comment, postId, onReply, onDelete }: CommentProps
                 <ArrowBigDown className={cn('h-5 w-5', isDownvoted && 'fill-current')} />
               </button>
             </div>
-
+            
             {isAuthenticated && (
               <button onClick={() => setIsReplying(!isReplying)} className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground hover:bg-muted rounded">
                 <Reply className="h-3.5 w-3.5" />
-                답글
+                Reply
               </button>
             )}
-
+            
             <div className="relative">
               <button onClick={() => setShowMenu(!showMenu)} className="p-1 text-muted-foreground hover:bg-muted rounded">
                 <MoreHorizontal className="h-4 w-4" />
               </button>
-
+              
               {showMenu && (
                 <div className="absolute left-0 top-full mt-1 w-32 rounded-md border bg-popover shadow-lg z-10">
                   {isAuthor && (
                     <>
                       <button className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted text-left">
-                        <Edit2 className="h-3.5 w-3.5" /> 수정
+                        <Edit2 className="h-3.5 w-3.5" /> Edit
                       </button>
                       <button onClick={() => onDelete?.(comment.id)} className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted text-left text-destructive">
-                        <Trash2 className="h-3.5 w-3.5" /> 삭제
+                        <Trash2 className="h-3.5 w-3.5" /> Delete
                       </button>
                     </>
                   )}
                   <button className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted text-left text-destructive">
-                    <Flag className="h-3.5 w-3.5" /> 신고
+                    <Flag className="h-3.5 w-3.5" /> Report
                   </button>
                 </div>
               )}
             </div>
           </div>
-
-          {/* 답글 폼 */}
+          
+          {/* Reply form */}
           {isReplying && (
             <div className="mt-2 ml-4">
               <Textarea
                 value={replyContent}
                 onChange={(e) => setReplyContent(e.target.value)}
-                placeholder="답글 작성..."
+                placeholder="Write a reply..."
                 className="min-h-[80px] text-sm"
               />
               <div className="flex justify-end gap-2 mt-2">
-                <Button variant="ghost" size="sm" onClick={() => setIsReplying(false)}>취소</Button>
+                <Button variant="ghost" size="sm" onClick={() => setIsReplying(false)}>Cancel</Button>
                 <Button size="sm" onClick={handleReply} disabled={!replyContent.trim() || isSubmitting} isLoading={isSubmitting}>
-                  답글
+                  Reply
                 </Button>
               </div>
             </div>
           )}
-
-          {/* 답글 목록 */}
+          
+          {/* Replies */}
           {hasReplies && (
             <div className="mt-2">
               {comment.replies!.map(reply => (
@@ -166,27 +166,27 @@ export function CommentItem({ comment, postId, onReply, onDelete }: CommentProps
           )}
         </>
       )}
-
-      {/* 접힘 표시 */}
+      
+      {/* Collapsed indicator */}
       {isCollapsed && hasReplies && (
         <button onClick={() => toggleCollapsed()} className="text-xs text-muted-foreground hover:text-foreground">
-          {comment.replies!.length}개의 답글 더 보기
+          {comment.replies!.length} more {comment.replies!.length === 1 ? 'reply' : 'replies'}
         </button>
       )}
     </div>
   );
 }
 
-// 댓글 목록
+// Comment List
 export function CommentList({ comments, postId, isLoading }: { comments: Comment[]; postId: string; isLoading?: boolean }) {
   const [localComments, setLocalComments] = React.useState(comments);
-
+  
   React.useEffect(() => {
     setLocalComments(comments);
   }, [comments]);
-
+  
   const handleReply = (newComment: Comment) => {
-    // 해당 부모에 답글 추가
+    // Add reply to the appropriate parent
     const addReply = (items: Comment[]): Comment[] => {
       return items.map(item => {
         if (item.id === newComment.parentId) {
@@ -200,11 +200,11 @@ export function CommentList({ comments, postId, isLoading }: { comments: Comment
     };
     setLocalComments(addReply(localComments));
   };
-
+  
   const handleDelete = async (commentId: string) => {
     try {
       await api.deleteComment(commentId);
-      // 로컬 상태에서 제거
+      // Remove from local state
       const removeComment = (items: Comment[]): Comment[] => {
         return items.filter(item => item.id !== commentId).map(item => ({
           ...item,
@@ -213,10 +213,10 @@ export function CommentList({ comments, postId, isLoading }: { comments: Comment
       };
       setLocalComments(removeComment(localComments));
     } catch (err) {
-      console.error('댓글 삭제 실패:', err);
+      console.error('Failed to delete comment:', err);
     }
   };
-
+  
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -226,16 +226,16 @@ export function CommentList({ comments, postId, isLoading }: { comments: Comment
       </div>
     );
   }
-
+  
   if (localComments.length === 0) {
     return (
       <div className="text-center py-8">
         <MessageSquare className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-        <p className="text-muted-foreground">아직 댓글이 없습니다. 첫 번째 댓글을 작성해보세요!</p>
+        <p className="text-muted-foreground">No comments yet. Be the first to comment!</p>
       </div>
     );
   }
-
+  
   return (
     <div className="space-y-2">
       {localComments.map(comment => (
@@ -245,58 +245,58 @@ export function CommentList({ comments, postId, isLoading }: { comments: Comment
   );
 }
 
-// 댓글 폼
+// Comment Form
 export function CommentForm({ postId, parentId, onSubmit, onCancel }: { postId: string; parentId?: string; onSubmit?: (comment: Comment) => void; onCancel?: () => void }) {
   const { isAuthenticated } = useAuth();
   const [content, setContent] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-
+  
   if (!isAuthenticated) {
     return (
       <div className="p-4 text-center bg-muted rounded-lg">
         <p className="text-sm text-muted-foreground">
-          댓글을 작성하려면 <Link href="/auth/login" className="text-primary hover:underline">로그인</Link> 또는{' '}
-          <Link href="/auth/register" className="text-primary hover:underline">가입</Link>해주세요
+          <Link href="/auth/login" className="text-primary hover:underline">Log in</Link> or{' '}
+          <Link href="/auth/register" className="text-primary hover:underline">sign up</Link> to comment
         </p>
       </div>
     );
   }
-
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim() || isSubmitting) return;
-
+    
     setIsSubmitting(true);
     try {
       const comment = await api.createComment(postId, { content, parentId });
       setContent('');
       onSubmit?.(comment);
     } catch (err) {
-      console.error('댓글 작성 실패:', err);
+      console.error('Failed to create comment:', err);
     } finally {
       setIsSubmitting(false);
     }
   };
-
+  
   return (
     <form onSubmit={handleSubmit}>
       <Textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        placeholder="의견을 남겨주세요"
+        placeholder="What are your thoughts?"
         className="min-h-[100px]"
       />
       <div className="flex justify-end gap-2 mt-2">
-        {onCancel && <Button type="button" variant="ghost" onClick={onCancel}>취소</Button>}
+        {onCancel && <Button type="button" variant="ghost" onClick={onCancel}>Cancel</Button>}
         <Button type="submit" disabled={!content.trim() || isSubmitting} isLoading={isSubmitting}>
-          댓글
+          Comment
         </Button>
       </div>
     </form>
   );
 }
 
-// 댓글 스켈레톤
+// Comment Skeleton
 export function CommentSkeleton() {
   return (
     <div className="space-y-2">
@@ -314,17 +314,17 @@ export function CommentSkeleton() {
   );
 }
 
-// 댓글 정렬
+// Comment Sort
 export function CommentSort({ value, onChange }: { value: string; onChange: (value: string) => void }) {
   const options = [
-    { value: 'top', label: '상위' },
-    { value: 'new', label: '최신' },
-    { value: 'controversial', label: '논쟁' },
+    { value: 'top', label: 'Top' },
+    { value: 'new', label: 'New' },
+    { value: 'controversial', label: 'Controversial' },
   ];
-
+  
   return (
     <div className="flex items-center gap-2">
-      <span className="text-sm text-muted-foreground">정렬:</span>
+      <span className="text-sm text-muted-foreground">Sort by:</span>
       <select value={value} onChange={(e) => onChange(e.target.value)} className="text-sm bg-transparent border rounded px-2 py-1">
         {options.map(opt => (
           <option key={opt.value} value={opt.value}>{opt.label}</option>

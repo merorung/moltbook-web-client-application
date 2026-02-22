@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
 
     const cookieValue = req.cookies.get('moltbook_oauth_state')?.value;
     if (!cookieValue) {
-      return redirectWithError('expired', 'OAuth 세션이 만료되었습니다. 다시 시도해주세요.');
+      return redirectWithError('expired', 'OAuth session expired. Please try again.');
     }
 
     const { state: savedState, codeVerifier, claimToken } = deserializeOAuthCookie(cookieValue);
@@ -38,14 +38,14 @@ export async function GET(req: NextRequest) {
     if (!state || state !== savedState) {
       return redirectToClaimPage(claimToken, {
         error: 'invalid_state',
-        message: 'OAuth 상태가 올바르지 않습니다. 다시 시도해주세요.',
+        message: 'Invalid OAuth state. Please try again.',
       });
     }
 
     if (error || !code) {
       return redirectToClaimPage(claimToken, {
         error: 'denied',
-        message: 'Twitter 인증이 거부되었습니다.',
+        message: 'Twitter authorization was denied.',
       });
     }
 
@@ -71,7 +71,7 @@ export async function GET(req: NextRequest) {
     response.cookies.delete('moltbook_oauth_state');
     return response;
   } catch (err) {
-    console.error('Twitter 콜백 오류:', err);
+    console.error('Twitter callback error:', err);
 
     const cookieValue = req.cookies.get('moltbook_oauth_state')?.value;
     if (cookieValue) {
@@ -79,13 +79,13 @@ export async function GET(req: NextRequest) {
         const { claimToken } = deserializeOAuthCookie(cookieValue);
         return redirectToClaimPage(claimToken, {
           error: 'server_error',
-          message: '예기치 않은 오류가 발생했습니다. 다시 시도해주세요.',
+          message: 'An unexpected error occurred. Please try again.',
         });
       } catch {
         // cookie parsing failed
       }
     }
 
-    return redirectWithError('server_error', '예기치 않은 오류가 발생했습니다.');
+    return redirectWithError('server_error', 'An unexpected error occurred.');
   }
 }

@@ -1,12 +1,12 @@
 /**
- * 게시글 서비스 - 글 작성, 조회, 관리
- * Supabase 쿼리 빌더 사용, hot/rising은 JS에서 정렬
+ * Post Service - handles post creation, retrieval, management
+ * Uses Supabase query builder with JS-side sorting for hot/rising
  */
 
 import { getSupabase } from '@/lib/supabase';
 import { BadRequestError, NotFoundError, ForbiddenError } from '@/lib/errors';
 
-// Reddit 스타일 인기 점수 알고리즘
+// Reddit-style hot score algorithm
 function hotScore(score: number, createdAt: string): number {
   const order = Math.log10(Math.max(Math.abs(score), 1));
   const sign = score > 0 ? 1 : score < 0 ? -1 : 0;
@@ -14,7 +14,7 @@ function hotScore(score: number, createdAt: string): number {
   return order * sign + seconds / 45000;
 }
 
-// 급상승 점수 알고리즘
+// Rising score algorithm
 function risingScore(score: number, createdAt: string): number {
   const hoursSinceCreation = (Date.now() - new Date(createdAt).getTime()) / (1000 * 3600);
   return (score + 1) / Math.pow(hoursSinceCreation + 2, 1.5);
@@ -48,22 +48,22 @@ export class PostService {
     url?: string;
   }) {
     if (!title || title.trim().length === 0) {
-      throw new BadRequestError('제목을 입력해주세요');
+      throw new BadRequestError('Title is required');
     }
     if (title.length > 300) {
-      throw new BadRequestError('제목은 300자 이하여야 합니다');
+      throw new BadRequestError('Title must be 300 characters or less');
     }
     if (!content && !url) {
-      throw new BadRequestError('본문 또는 URL을 입력해주세요');
+      throw new BadRequestError('Either content or url is required');
     }
     if (content && url) {
-      throw new BadRequestError('본문과 URL을 동시에 입력할 수 없습니다');
+      throw new BadRequestError('Post cannot have both content and url');
     }
     if (content && content.length > 40000) {
-      throw new BadRequestError('본문은 40,000자 이하여야 합니다');
+      throw new BadRequestError('Content must be 40000 characters or less');
     }
     if (url) {
-      try { new URL(url); } catch { throw new BadRequestError('올바르지 않은 URL 형식입니다'); }
+      try { new URL(url); } catch { throw new BadRequestError('Invalid URL format'); }
     }
 
     const supabase = getSupabase();
@@ -75,7 +75,7 @@ export class PostService {
       .maybeSingle();
 
     if (submoltError) throw submoltError;
-    if (!submoltRecord) throw new NotFoundError('커뮤니티');
+    if (!submoltRecord) throw new NotFoundError('Submolt');
 
     const { data, error } = await supabase
       .from('posts')
@@ -105,7 +105,7 @@ export class PostService {
       .maybeSingle();
 
     if (error) throw error;
-    if (!data) throw new NotFoundError('게시글');
+    if (!data) throw new NotFoundError('Post');
     return flattenPost(data);
   }
 
@@ -130,7 +130,7 @@ export class PostService {
       query = query.eq('submolt', submolt.toLowerCase());
     }
 
-    // 'new'와 'top'은 DB에서 직접 정렬
+    // For 'new' and 'top', sort in DB directly
     if (sort === 'new') {
       query = query.order('created_at', { ascending: false }).range(offset, offset + limit - 1);
     } else if (sort === 'top') {
@@ -139,7 +139,7 @@ export class PostService {
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
     } else {
-      // hot/rising은 더 많이 가져와서 JS에서 정렬
+      // For hot/rising, fetch more and sort in JS
       const fetchLimit = Math.max(limit * 4, 200);
       query = query.order('created_at', { ascending: false }).limit(fetchLimit);
     }
@@ -170,7 +170,7 @@ export class PostService {
   ) {
     const supabase = getSupabase();
 
-    // 구독 중인 커뮤니티 ID와 팔로우 중인 에이전트 ID를 병렬로 조회
+    // Get subscribed submolt IDs and followed agent IDs in parallel
     const [subsResult, followsResult] = await Promise.all([
       supabase.from('subscriptions').select('submolt_id').eq('agent_id', agentId),
       supabase.from('follows').select('followed_id').eq('follower_id', agentId),
@@ -183,7 +183,7 @@ export class PostService {
       return [];
     }
 
-    // 구독 중인 커뮤니티 또는 팔로우 중인 에이전트의 글 필터
+    // Build OR filter for posts in subscribed submolts or by followed agents
     const filters: string[] = [];
     if (submoltIds.length > 0) {
       filters.push(`submolt_id.in.(${submoltIds.join(',')})`);
@@ -232,8 +232,8 @@ export class PostService {
       .maybeSingle();
 
     if (findError) throw findError;
-    if (!post) throw new NotFoundError('게시글');
-    if (post.author_id !== agentId) throw new ForbiddenError('본인의 게시글만 삭제할 수 있습니다');
+    if (!post) throw new NotFoundError('Post');
+    if (post.author_id !== agentId) throw new ForbiddenError('You can only delete your own posts');
 
     const { error } = await supabase.from('posts').delete().eq('id', postId);
     if (error) throw error;
